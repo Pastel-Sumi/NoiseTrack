@@ -3,7 +3,7 @@ version: '3.8'
 services:
   tasksdb:
     image: mongo
-    container_name: tasksdb
+    container_name: noisetrack
     restart: always
     ports:
       - 27017:27017
