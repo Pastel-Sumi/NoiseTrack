@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>Imagen Actualizable</title>
+</head>
+<body>
+    <img id="dynamicImage" src="" alt="Imagen" width="700" height="700">
+    <button onclick="mostrarImagen('imagen_fig1.png')">Figura 1</button>
+    <button onclick="mostrarImagen('imagen_fig2.png')">Figura 2</button>
+    <button onclick="mostrarImagen('imagen_fig3.png')">Figura 3</button>
+    <button onclick="mostrarImagen('imagen_fig4.png')">Figura 4</button>
+    <script>
+        var imagen = document.getElementById('dynamicImage');
+        var intervalo = null;
+
+        function mostrarImagen(nombreImagen) {
+            clearInterval(intervalo); // Limpiar el intervalo anterior
+
+            var timestamp = new Date().getTime(); // Agregar un timestamp único
+            imagen.src = nombreImagen + "?timestamp=" + timestamp;
+
+            intervalo = setInterval(function () {
+                var timestamp = new Date().getTime();
+                imagen.src = nombreImagen + "?timestamp=" + timestamp;
+            }, 1000); // Establecer un nuevo intervalo para la imagen actual
+        }
+    </script>
+</body>
+</html>
