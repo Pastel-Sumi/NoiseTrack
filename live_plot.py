@@ -13,6 +13,14 @@ import matplotlib.pyplot as plt
 import numpy as np
 import sounddevice as sd
 from matplotlib.animation import FuncAnimation
+import os
+
+image_folder = "imagenes"
+
+# Asegúrate de que la carpeta exista; si no, créala
+if not os.path.exists(image_folder):
+    os.makedirs(image_folder)
+
 
 threshold_db = 15  # Umbral en dB -50
 urgent_threshold_db = 30  # Este es el umbral de urgencia en dB -10
@@ -56,7 +64,7 @@ parser.add_argument(
     "-w",
     "--window",
     type=float,
-    default=50,  # 200
+    default=500,  # 200
     metavar="DURATION",
     help="visible time slot (default: %(default)s ms)",
 )
@@ -93,9 +101,8 @@ def audio_callback(indata, frames, time, status):
     q.put(indata[:: args.downsample, mapping])
 
 def update_plots(frame):
-    a = update_plot(frame)
-    return updateee
-
+    b = update_plot(frame)
+    return b
 def update_plot(frame):
     """This is called by matplotlib for each plot update.
 
@@ -103,10 +110,10 @@ def update_plot(frame):
     therefore the queue tends to contain multiple blocks of audio data.
 
     """
-    global plotdata
+    global plotdata1
     global time_threshold
-    global plotdata3
     global plotdata2
+    global plotdata3
     global plotdata4
 
     while True:
@@ -114,28 +121,27 @@ def update_plot(frame):
             data = q.get_nowait()
         except queue.Empty:
             break
-        shift = len(data)
-        plotdata = np.roll(plotdata, 1, axis=0)
-        plotdata3 = np.roll(plotdata3, 1, axis=0)
-        plotdata[1] = np.mean(np.sort(data)[::-1][:5])
-        plotdata3[1] = np.mean(np.sort(data)[::-1][:5])
-
-
-        plotdata4 = np.roll(plotdata4, 1, axis=0)
+        plotdata1 = np.roll(plotdata1, 1, axis=0)
+        plotdata1[1] = np.mean(np.sort(data)[::-1][:5])
         plotdata2 = np.roll(plotdata2, 1, axis=0)
-        plotdata4[1] = np.mean(np.sort(data)[::-1][:5])
         plotdata2[1] = np.mean(np.sort(data)[::-1][:5])
 
+        plotdata3 = np.roll(plotdata3, 1, axis=0)
+        plotdata3[1] = np.mean(np.sort(data)[::-1][:5])
+
+        plotdata4 = np.roll(plotdata4, 1, axis=0)
+        plotdata4[1] = np.mean(np.sort(data)[::-1][:5])
+
     # Convert amplitudes to decibels
-    plotdata_db = 20 * np.log10(
-        np.abs(plotdata) / 0.0012  # amplitud de referencia
-    )  # 20 * np.log10(np.abs(plotdata) + 1e-6)
+    plotdata1_db = 20 * np.log10(
+        np.abs(plotdata1) / 0.0012  # amplitud de referencia
+    )  # 20 * np.log10(np.abs(plotdata1) + 1e-6)
 
     
-    for column, line in enumerate(lines):
-        print(np.max(plotdata_db), "[dB]")
-        line.set_ydata(plotdata_db[:, column])
-        if np.any(plotdata_db[:, column] > urgent_threshold_db):
+    for column, line in enumerate(lines1):
+        print(np.max(plotdata1_db), "[dB]")
+        line.set_ydata(plotdata1_db[:, column])
+        if np.any(plotdata1_db[:, column] > urgent_threshold_db):
             line.set_color("red")  # Set color to red if urgent_threshold is exceeded
 
             current_time = datetime.now().strftime("%H:%M:%S")
@@ -149,7 +155,7 @@ def update_plot(frame):
                 send_notification(f"Se sobrepasaron los {urgent_threshold_db} dB por {dif.total_seconds()} segundos")
 
         # Check if any value exceeds the threshold
-        elif np.any(plotdata_db[:, column] > threshold_db):
+        elif np.any(plotdata1_db[:, column] > threshold_db):
             line.set_color("yellow")  # Set color to red if threshold is exceeded
 
             current_time = datetime.now().strftime("%H:%M:%S")
@@ -165,15 +171,88 @@ def update_plot(frame):
 
             time_threshold = datetime.strptime(current_time, "%H:%M:%S")
 
+    #return lines13
+    fig1.savefig(os.path.join(image_folder, 'imagen_fig1.png'))
+
+    return lines1
+
+def update_plot2(frame):
+    """This is called by matplotlib for each plot update.
+
+    Typically, audio callbacks happen more frequently than plot updates,
+    therefore the queue tends to contain multiple blocks of audio data.
+
+    """
+    global plotdata2
+    global time_threshold
+
+
+    # Convert amplitudes to decibels
+    plotdata2_db = 20 * np.log10(
+        np.abs(plotdata2) / 0.0012  # amplitud de referencia
+    )  # 20 * np.log10(np.abs(plotdata2) + 1e-6)
+
+    
+    for column, line in enumerate(lines2):
+        print(np.max(plotdata2_db), "[dB]")
+        line.set_ydata(plotdata2_db[:, column])
+        if np.any(plotdata2_db[:, column] > urgent_threshold_db):
+            line.set_color("red")  # Set color to red if urgent_threshold is exceeded
+
+            current_time = datetime.now().strftime("%H:%M:%S")
+
+            dif = datetime.strptime(current_time, "%H:%M:%S") - time_threshold
+            print("Se envió aviso al sistema a las", current_time)
+            send_notification(f"Se sobrepasaron los {threshold_db} dB a las {current_time}")
+            if dif.total_seconds() >= 60:  # Se sobrepaso el nivel por más de un minuto
+                # Envia la notificación al módulo principal
+                print("Se envió aviso urgente al sistema a las",current_time)
+                send_notification(f"Se sobrepasaron los {urgent_threshold_db} dB por {dif.total_seconds()} segundos")
+
+        # Check if any value exceeds the threshold
+        elif np.any(plotdata2_db[:, column] > threshold_db):
+            line.set_color("yellow")  # Set color to red if threshold is exceeded
+
+            current_time = datetime.now().strftime("%H:%M:%S")
+            time_threshold = datetime.strptime(current_time, "%H:%M:%S")
+
+            # Envia la notificación al módulo principal
+            print("Se envió aviso al sistema a las", current_time)
+            send_notification(f"Se sobrepasaron los {threshold_db} dB a las {current_time}")
+        else:
+            line.set_color("blue")  # Set color to blue if threshold is not exceeded
+
+            current_time = datetime.now().strftime("%H:%M:%S")
+
+            time_threshold = datetime.strptime(current_time, "%H:%M:%S")
+
+    #return lines23
+    fig2.savefig(os.path.join(image_folder, 'imagen_fig2.png'))
+
+    return lines2
+
+def update_plot3(frame):
+    """This is called by matplotlib for each plot update.
+
+    Typically, audio callbacks happen more frequently than plot updates,
+    therefore the queue tends to contain multiple blocks of audio data.
+
+    """
+    global plotdata3
+    global time_threshold
+
+
+    # Convert amplitudes to decibels
     plotdata3_db = 20 * np.log10(
         np.abs(plotdata3) / 0.0012  # amplitud de referencia
     )  # 20 * np.log10(np.abs(plotdata3) + 1e-6)
 
-    for column3, line3 in enumerate(lines3):
+    
+    for column, line in enumerate(lines3):
         print(np.max(plotdata3_db), "[dB]")
-        line3.set_ydata(plotdata3_db[:, column3])
-        if np.any(plotdata3_db[:, column3] > urgent_threshold_db):
-            line3.set_color("red")  # Set color to red if urgent_threshold is exceeded
+        line.set_ydata(plotdata3_db[:, column])
+        if np.any(plotdata3_db[:, column] > urgent_threshold_db):
+            line.set_color("red")  # Set color to red if urgent_threshold is exceeded
 
             current_time = datetime.now().strftime("%H:%M:%S")
 
@@ -186,8 +265,8 @@ def update_plot(frame):
                 send_notification(f"Se sobrepasaron los {urgent_threshold_db} dB por {dif.total_seconds()} segundos")
 
         # Check if any value exceeds the threshold
-        elif np.any(plotdata3_db[:, column3] > threshold_db):
-            line3.set_color("yellow")  # Set color to red if threshold is exceeded
+        elif np.any(plotdata3_db[:, column] > threshold_db):
+            line.set_color("yellow")  # Set color to red if threshold is exceeded
 
             current_time = datetime.now().strftime("%H:%M:%S")
             time_threshold = datetime.strptime(current_time, "%H:%M:%S")
@@ -196,60 +275,41 @@ def update_plot(frame):
             print("Se envió aviso al sistema a las", current_time)
             send_notification(f"Se sobrepasaron los {threshold_db} dB a las {current_time}")
         else:
-            line3.set_color("blue")  # Set color to blue if threshold is not exceeded
+            line.set_color("blue")  # Set color to blue if threshold is not exceeded
 
             current_time = datetime.now().strftime("%H:%M:%S")
 
             time_threshold = datetime.strptime(current_time, "%H:%M:%S")
 
+    #return lines33
+    fig3.savefig(os.path.join(image_folder, 'imagen_fig3.png'))
 
-    plotdata2_db = 20 * np.log10(
-        np.abs(plotdata2) / 0.0012  # amplitud de referencia
-    )  # 20 * np.log10(np.abs(plotdata3) + 1e-6)
-
-    for column2, line2 in enumerate(lines2):
-        print(np.max(plotdata2_db), "[dB]")
-        line2.set_ydata(plotdata2_db[:, column2])
-        if np.any(plotdata2_db[:, column2] > urgent_threshold_db):
-            line2.set_color("red")  # Set color to red if urgent_threshold is exceeded
-
-            current_time = datetime.now().strftime("%H:%M:%S")
-
-            dif = datetime.strptime(current_time, "%H:%M:%S") - time_threshold
-            print("Se envió aviso al sistema a las", current_time)
-            send_notification(f"Se sobrepasaron los {threshold_db} dB a las {current_time}")
-            if dif.total_seconds() >= 60:  # Se sobrepaso el nivel por más de un minuto
-                # Envia la notificación al módulo principal
-                print("Se envió aviso urgente al sistema a las",current_time)
-                send_notification(f"Se sobrepasaron los {urgent_threshold_db} dB por {dif.total_seconds()} segundos")
-
-        # Check if any value exceeds the threshold
-        elif np.any(plotdata2_db[:, column2] > threshold_db):
-            line2.set_color("yellow")  # Set color to red if threshold is exceeded
-
-            current_time = datetime.now().strftime("%H:%M:%S")
-            time_threshold = datetime.strptime(current_time, "%H:%M:%S")
-
-            # Envia la notificación al módulo principal
-            print("Se envió aviso al sistema a las", current_time)
-            send_notification(f"Se sobrepasaron los {threshold_db} dB a las {current_time}")
-        else:
-            line2.set_color("blue")  # Set color to blue if threshold is not exceeded
-
-            current_time = datetime.now().strftime("%H:%M:%S")
-
-            time_threshold = datetime.strptime(current_time, "%H:%M:%S")
+    return lines3
 
 
+def update_plot4(frame):
+    """This is called by matplotlib for each plot update.
+
+    Typically, audio callbacks happen more frequently than plot updates,
+    therefore the queue tends to contain multiple blocks of audio data.
+
+    """
+    global plotdata4
+    global time_threshold
+    global fig4
+
+
+    # Convert amplitudes to decibels
     plotdata4_db = 20 * np.log10(
         np.abs(plotdata4) / 0.0012  # amplitud de referencia
     )  # 20 * np.log10(np.abs(plotdata4) + 1e-6)
 
-    for column4, line4 in enumerate(lines4):
+    
+    for column, line in enumerate(lines4):
         print(np.max(plotdata4_db), "[dB]")
-        line4.set_ydata(plotdata4_db[:, column4])
-        if np.any(plotdata4_db[:, column4] > urgent_threshold_db):
-            line4.set_color("red")  # Set color to red if urgent_threshold is exceeded
+        line.set_ydata(plotdata4_db[:, column])
+        if np.any(plotdata4_db[:, column] > urgent_threshold_db):
+            line.set_color("red")  # Set color to red if urgent_threshold is exceeded
 
             current_time = datetime.now().strftime("%H:%M:%S")
 
@@ -262,8 +322,8 @@ def update_plot(frame):
                 send_notification(f"Se sobrepasaron los {urgent_threshold_db} dB por {dif.total_seconds()} segundos")
 
         # Check if any value exceeds the threshold
-        elif np.any(plotdata4_db[:, column4] > threshold_db):
-            line4.set_color("yellow")  # Set color to red if threshold is exceeded
+        elif np.any(plotdata4_db[:, column] > threshold_db):
+            line.set_color("yellow")  # Set color to red if threshold is exceeded
 
             current_time = datetime.now().strftime("%H:%M:%S")
             time_threshold = datetime.strptime(current_time, "%H:%M:%S")
@@ -272,14 +332,21 @@ def update_plot(frame):
             print("Se envió aviso al sistema a las", current_time)
             send_notification(f"Se sobrepasaron los {threshold_db} dB a las {current_time}")
         else:
-            line4.set_color("blue")  # Set color to blue if threshold is not exceeded
+            line.set_color("blue")  # Set color to blue if threshold is not exceeded
 
             current_time = datetime.now().strftime("%H:%M:%S")
 
             time_threshold = datetime.strptime(current_time, "%H:%M:%S")
 
+    #return lines43
 
-    return updateee
+    # Guarda la imagen de fig4 en la carpeta "imagenes"
+    fig4.savefig(os.path.join(image_folder, 'imagen_fig4.png'))
+
+
+    return lines4
+
+
 
 def send_notification(message):
     try:
@@ -290,18 +357,23 @@ def send_notification(message):
         s.close()
     except ConnectionRefusedError:
         print("No se pudo establecer conexión con el módulo principal")
-def setup_figures(args):
+
+def setup_figures(args, largo, valor):
     if args.samplerate is None:
         device_info = sd.query_devices(args.device, "input")
         args.samplerate = device_info["default_samplerate"]
 
     time_threshold = datetime.strptime(datetime.now().strftime("%H:%M:%S"), "%H:%M:%S")
 
-    length = int(11665)    
+    #length = int(args.samplerate * 1)
+    #length3 = int(args.samplerate * 0.1)
+    length = int(largo * valor)
+    conversion_factor = 2333
+
+    #length = int(args.window * args.samplerate / (1000 * args.downsample))
     plotdata = np.zeros((length, len(args.channels)))
 
-
-    fig, ((ax, ax2), (ax3, ax4)) = plt.subplots(2, 2)
+    fig, (ax) = plt.subplots()
     lines = ax.plot(plotdata)
     if len(args.channels) > 1:
         ax.legend(
@@ -309,150 +381,44 @@ def setup_figures(args):
             loc="lower left",
             ncol=len(args.channels),
         )
-
-    conversion_factor = 2333
-
-
+    # Calcula la duración en minutos de tus datos
     duration_minutes = len(plotdata) / conversion_factor
 
     ax.set_xlabel("Tiempo (minutos)")
+    if(largo*valor< 2333*30+100):
+        ax.set_title("Gráfico de "+str(int(largo*valor/2333)) +" minutos")
+    elif (int(largo*valor/(2333*60)) == 1):
+        ax.set_title("Gráfico de "+str(int(largo*valor/(2333*60))) +" hora")
+    else:
+        ax.set_title("Gráfico de "+str(int(largo*valor/(2333*60))) +" horas")
+
+    
 
     ax.axis((0, int(len(plotdata)), 0, 150))  # Adjust y-axis range to -60 dB to 0 dB
     ax.set_ylim([0, len(plotdata)])
-    ax.set_xticks(np.arange(0, len(plotdata) + 2333, 2333))
+    ax.set_xticks(np.arange(0, len(plotdata) + (2333*valor), (2333*valor)))
     ax.set_ylim([0, 150])  # Set y-axis limits to -60 dB to 0 dB
-    ax.set_xticklabels(np.arange(0, duration_minutes +1 , 1))
+    ax.set_xticklabels(np.arange(0, duration_minutes +1 , valor).astype(int))
     #ax.set_xticklabels([])
     ax.yaxis.grid(True)
     ax.xaxis.grid(True)
     ax.set_ylabel("Amplitude (dB)")  # Set y-axis label
-
-
-    length3 = int(11665 * 6)
-
-    #length = int(args.window * args.samplerate / (1000 * args.downsample))
-    plotdata3 = np.zeros((length3, len(args.channels)))
-    lines3 = ax3.plot(plotdata3)
-    if len(args.channels) > 1:
-        ax3.legend(
-            [f"channel {c}" for c in args.channels],
-            loc="lower left",
-            ncol=len(args.channels),
-        )
-
-
-    duration_minutes3 = len(plotdata3) / conversion_factor
-    ax3.set_xlabel("Tiempo (minutos)")
-
-
-
-    ax3.axis((0, int(len(plotdata3)), 0, 150))  # Adjust y-axis range to -60 dB to 0 dB
-    ax3.set_ylim([0, len(plotdata3)])
-    ax3.set_xticks(np.arange(0, len(plotdata3) + (2333*6), (2333 * 6)))
-    ax3.set_ylim([0, 150])  # Set y-axis limits to -60 dB to 0 dB
-    ax3.set_xticklabels(np.arange(0, duration_minutes3 +1 , 6))
-    #ax3.set_xticklabels([])
-    ax3.yaxis.grid(True)
-    ax3.xaxis.grid(True)
-    ax3.set_ylabel("Amplitude (dB)")  # Set y-axis label
+   
 
 
 
 
-    ax3.axis((0, len(plotdata3), 0, 150))  # Adjust y-axis range to -60 dB to 0 dB
-    ax3.set_ylim([0, 150])  # Set y-axis limits to -60 dB to 0 dB
-    #ax3.set_xticklabels([])
-    ax3.yaxis.grid(True)
-    ax3.set_ylabel("Amplitude (dB)")  # Set y-axis label
 
-    
-    length2 = int(11665 * 12)
+    #fig.tight_layout(pad=0)
 
-    #length = int(args.window * args.samplerate / (1000 * args.downsample))
-    plotdata2 = np.zeros((length2, len(args.channels)))
-    lines2 = ax2.plot(plotdata2)
-    if len(args.channels) > 1:
-        ax2.legend(
-            [f"channel {c}" for c in args.channels],
-            loc="lower left",
-            ncol=len(args.channels),
-        )
-
-
-    duration_minutes2 = len(plotdata2) / conversion_factor
-    ax2.set_xlabel("Tiempo (minutos)")
-
-
-
-    ax2.axis((0, int(len(plotdata2)), 0, 150))  # Adjust y-axis range to -60 dB to 0 dB
-    ax2.set_ylim([0, len(plotdata2)])
-    ax2.set_xticks(np.arange(0, len(plotdata2) + (2333*12), (2333 * 12)))
-    ax2.set_ylim([0, 150])  # Set y-axis limits to -60 dB to 0 dB
-    ax2.set_xticklabels(np.arange(0, duration_minutes2 +1 , 12))
-    #ax2.set_xticklabels([])
-    ax2.yaxis.grid(True)
-    ax2.xaxis.grid(True)
-    ax2.set_ylabel("Amplitude (dB)")  # Set y-axis label
-
-
-
-
-    ax2.axis((0, len(plotdata2), 0, 150))  # Adjust y-axis range to -60 dB to 0 dB
-    ax2.set_ylim([0, 150])  # Set y-axis limits to -60 dB to 0 dB
-    #ax2.set_xticklabels([])
-    ax2.yaxis.grid(True)
-    ax2.set_ylabel("Amplitude (dB)")  # Set y-axis label
-
-
-
-    length4 = int(11665 * 48)
-
-    #length = int(args.window * args.samplerate / (1000 * args.downsample))
-    plotdata4 = np.zeros((length4, len(args.channels)))
-    lines4 = ax4.plot(plotdata4)
-    if len(args.channels) > 1:
-        ax4.legend(
-            [f"channel {c}" for c in args.channels],
-            loc="lower left",
-            ncol=len(args.channels),
-        )
-
-
-    duration_minutes4 = len(plotdata4) / conversion_factor
-    ax2.set_xlabel("Tiempo (minutos)")
-
-
-
-    ax4.axis((0, int(len(plotdata4)), 0, 150))  # Adjust y-axis range to -60 dB to 0 dB
-    ax4.set_ylim([0, len(plotdata4)])
-    ax4.set_xticks(np.arange(0, len(plotdata4) + (2333*48), (2333 * 48)))
-    ax4.set_ylim([0, 150])  # Set y-axis limits to -60 dB to 0 dB
-    ax4.set_xticklabels(np.arange(0, duration_minutes4 +1 , 48))
-    #ax2.set_xticklabels([])
-    ax4.yaxis.grid(True)
-    ax4.xaxis.grid(True)
-    ax4.set_ylabel("Amplitude (dB)")  # Set y-axis label
-
-
-
-
-    ax4.axis((0, len(plotdata4), 0, 150))  # Adjust y-axis range to -60 dB to 0 dB
-    ax4.set_ylim([0, 150])  # Set y-axis limits to -60 dB to 0 dB
-    #ax4.set_xticklabels([])
-    ax4.yaxis.grid(True)
-    ax4.set_ylabel("Amplitude (dB)")  # Set y-axis label
-
-
-    return fig, ax, ax3, plotdata, lines, lines3, plotdata3, ax2, lines2, plotdata2, ax4, lines4, plotdata4
-
-
-
+    return fig, ax, plotdata, lines,
 try:
-    fig1, ax1, ax3, plotdata, lines, lines3, plotdata3,ax2, lines2, plotdata2, ax4, lines4, plotdata4 = setup_figures(args)
-    updateee = lines + lines3 + lines2 + lines4
+    fig1, ax1, plotdata1, lines1 = setup_figures(args,11665, 1)
+    fig2, ax2, plotdata2, lines2 = setup_figures(args,11665, 6)
+    fig3, ax3, plotdata3, lines3 = setup_figures(args,11665, 12)
+    fig4, ax4, plotdata4, lines4 = setup_figures(args,11665, 48)
 
-    #fig2, ax2, ax3, plotdata1, lines2, lines3, plotdata3 = setup_figures(args)
-
+    # Crear un objeto de flujo de audio
     stream = sd.InputStream(
         device=args.device,
         channels=max(args.channels),
@@ -460,9 +426,16 @@ try:
         callback=audio_callback,
     )
 
-    ani1 = FuncAnimation(fig1, update_plots, interval=10, blit=True)
-    #ani2 = FuncAnimation(fig2, update_plot2, interval=args.interval, blit=True)
+    # Crear las animaciones para ambas figuras
+    ani1 = FuncAnimation(fig1, update_plot, interval=args.interval, blit=True)
+    ani2 = FuncAnimation(fig2, update_plot2, interval=args.interval, blit=True)
+    ani3 = FuncAnimation(fig3, update_plot3, interval=args.interval, blit=True)
+    ani4 = FuncAnimation(fig4, update_plot4, interval=args.interval, blit=True)
+
+
+    # Iniciar el flujo de audio
     with stream:
+        # Mostrar ambas figuras
         plt.show()
 except Exception as e:
     parser.exit(type(e).__name__ + ": " + str(e))
