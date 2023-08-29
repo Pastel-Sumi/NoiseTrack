@@ -1,0 +1,52 @@
+.module--dashboard {
+    display: flex;
+    .module--dashboardNav {
+      width: 14.375em;
+      min-height: 100vh;
+      z-index: 8;
+      background: linear-gradient(180deg, #324390 0%, #243377 100%);
+      @include respond-to(tabletPhone) {
+        width: 6.25em;
+        display: none;
+        &.extend {
+          display: block;
+        }
+      }
+  
+      &.mobile {
+        width: 6.25em;
+      }
+    }
+    .module--dashboardContainer {
+      background: #EFF3F8;
+      width: calc(100% - 14.375em);
+      &.mobile {
+        width: calc(100% - 6.25em);
+      }
+      @include respond-to(tabletPhone) {
+        width: calc(100%);
+        &.extend {
+          width: calc(100% - 6.25em);
+        }
+        &.mobile {
+          width: 100%;
+        }
+      }
+    }
+  }
+
+.div1{
+  display: flex;
+    height: 100px;
+    width: 100%;
+    background-color: red;
+    justify-content: center;
+    align-content: center;
+}
+  
+.div2{
+    height:100%;
+    width: 100%;
+    background-color: green;
+}  
+  
