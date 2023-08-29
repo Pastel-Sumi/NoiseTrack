@@ -6,6 +6,8 @@ import { useForm } from "react-hook-form";
 import { registerSchema } from "../schemas/auth";
 import { zodResolver } from "@hookform/resolvers/zod";
 
+import logoSF from "../assets/logoSF.png"
+
 function Register() {
   const { signup, errors: registerErrors, isAuthenticated } = useAuth();
   const {
@@ -32,55 +34,57 @@ function Register() {
           <Message message={error} key={i} />
         ))}
 
+        <div className="flex justify-center">
+          <img width={100} height={100} fill="none" src={logoSF}/>
+        </div>
+
         <p className="flex justify-center">
-          <h1 className="text-3xl font-bold">Registro</h1>
+          <h1 className="text-4xl font-bold">Registro</h1>
         </p>
         
+        <br></br>
         <form onSubmit={handleSubmit(onSubmit)}>
-          <Label htmlFor="username">Nombre:</Label>
           <Input
+            label="Ingresa tu nombe y apellido"
             type="text"
             name="username"
-            placeholder="Escribe tu nombre y apellido"
+            placeholder="Nombre y apellido"
             {...register("username")}
             autoFocus
           />
-          {errors.username?.message && (
-            <p className="text-red-500">{errors.username?.message}</p>
-          )}
+          <p className="text-red-500">{errors.username?.message}</p>
 
-          <Label htmlFor="email">Correo electrónico:</Label>
+          {!errors.username?.message && <br/>}
           <Input
+            label="Ingresa tu correo electrónico"
             name="email"
-            placeholder="youremail@domain.tld"
+            placeholder="Correo electrónico"
             {...register("email")}
           />
-          {errors.email?.message && (
             <p className="text-red-500">{errors.email?.message}</p>
-          )}
 
-          <Label htmlFor="password">Contraseña:</Label>
+          {!errors.email?.message && <br/>}
           <Input
+            label="Ingresa tu contraseña"
             type="password"
             name="password"
-            placeholder="********"
+            placeholder="Contraseña"
             {...register("password")}
           />
-          {errors.password?.message && (
-            <p className="text-red-500">{errors.password?.message}</p>
-          )}
-
-          <Label htmlFor="confirmPassword">Confirma tu contraseña:</Label>
+          
+          <p className="text-red-500">{errors.password?.message}</p>
+          
+          {!errors.password?.message && <br/>}
           <Input
+            label="Ingresa nuevamente tu contraseña"
             type="password"
             name="confirmPassword"
-            placeholder="********"
+            placeholder="Confirmar contraseña"
             {...register("confirmPassword")}
           />
-          {errors.confirmPassword?.message && (
-            <p className="text-red-500">{errors.confirmPassword?.message}</p>
-          )}
+          <p className="text-red-500">{errors.confirmPassword?.message}</p>
 
+          {!errors.confirmPassword?.message && <br/>}
           <p className="flex justify-center">
             <Button>Enviar</Button>
           </p>
