@@ -77,13 +77,11 @@ function Audio() {
             rmss = rms;
             offset = 0;
             value = rms + offset;
-            
+          
             //Convierte RMS a decibeles
-            let db = 20 * Math.log10(Math.abs(rms)) * 2//amplitud de referencia
-             // 20 * np.log10(np.abs(plotdata) + 1e-6)
-
+            let db = 20 * Math.log10(Math.abs(rms)) * 2
+            
             localDbValues.push(value);
-
             // Actualizar la variable global micV con el valor del micrófono
             micV = db;
           };
