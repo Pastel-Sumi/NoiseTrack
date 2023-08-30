@@ -6,13 +6,11 @@ import { ProtectedRoute } from "./routes";
 import HomePage from "./pages/HomePage";
 import RegisterPage from "./pages/RegisterPage";
 import { LoginPage } from "./pages/LoginPage";
-import { TaskProvider } from "./context/tasksContext";
 import { Navbar } from "./components/Navbar";
 
 function App() {
   return (
     <AuthProvider>
-      <TaskProvider>
         <BrowserRouter>
           <main className="items-center justify-center">
             <Routes>
@@ -25,7 +23,6 @@ function App() {
             </Routes>
           </main>
         </BrowserRouter>
-      </TaskProvider>
     </AuthProvider>
   );
 }

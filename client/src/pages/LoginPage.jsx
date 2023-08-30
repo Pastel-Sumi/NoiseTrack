@@ -5,7 +5,6 @@ import { useEffect } from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Card, Message, Button, Input, Label } from "../components/ui";
 import { loginSchema } from "../schemas/auth";
-import { Chart } from "../components/Chart";
 
 import logoSF from "../assets/logoSF.png"
 
@@ -86,7 +85,6 @@ export function LoginPage() {
         </p>
         
       </Card>
-      <Chart />
     </div>
   );
 }

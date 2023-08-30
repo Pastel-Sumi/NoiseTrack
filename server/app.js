@@ -4,7 +4,7 @@ import morgan from "morgan";
 import cookieParser from "cookie-parser";
 
 import authRoutes from "./routes/auth.js";
-import taksRoutes from "./routes/tasks.js";
+import decibelRoutes from "./routes/decibel.js"
 import { FRONTEND_URL } from "./config/config.js";
 
 const app = express();
@@ -20,7 +20,7 @@ app.use(morgan("dev"));
 app.use(cookieParser());
 
 app.use("/api/auth", authRoutes);
-app.use("/api", taksRoutes);
+app.use("/api/decibel", decibelRoutes);
 
 if (process.env.NODE_ENV === "production") {
   const path = await import("path");

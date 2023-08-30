@@ -52,11 +52,9 @@ export const AuthProvider = ({ children }) => {
   };
 
   const logout = () => {
-    console.log("aaa")
     Cookies.remove("token");
     setUser(null);
     setIsAuthenticated(false);
-    console.log("aaa")
   };
 
   useEffect(() => {
