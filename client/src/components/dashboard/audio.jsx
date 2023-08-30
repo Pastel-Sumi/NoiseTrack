@@ -11,29 +11,27 @@ function Audio() {
     let value;
     let micV =0 ; // Variable global para almacenar el valor del micrófono
     let localDbValues = []; // array to store db values for each loop withing the refresh_rate
+    let sendDataDB = []
+    let intervaloSend = 60000
 
     useEffect(() => {
         initializeAudio();
         getInformation();
-
-        /* for (var i = 0; i < 14400; i++) {
-            var micValue = obtenerValorDelMicrofono();
-            super_data.push(replaceData());
-          }
-          data = super_data.slice(-limite); */
+        saveDecibel();
     }, []);
 
-    const saveDecibel = async (decibel) => {
-        try {
-          await saveRequest(decibel).then(res => {
-            if (res.status === 200) {
-                console.log("Decibel enviado");
-                console.log(res.data);
+    const saveDecibel = async () => {
+        setInterval(async function () {
+            try {
+                await saveRequest(sendDataDB).then(res => {
+                  if (res.status === 200) {
+                      console.log("Decibel enviado");
+                    }
+                }    
+              )} catch (error) {
+                console.log(error.response.data);
               }
-          }    
-        )} catch (error) {
-          console.log(error.response.data);
-        }
+          }, intervaloSend);
     };
 
     function startAudioProcessing(audioStream) {
@@ -105,7 +103,8 @@ function Audio() {
                 place: "Galpon 1"
             }
 
-            saveDecibel(sendData)
+            sendDataDB.push(sendData)
+            console.log(sendData)
           }, intervalo);
     }
 
