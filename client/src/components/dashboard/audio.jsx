@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 
 //hola
 function Audio() {
+    //Obtención de audio
     let isAudioInitialized = false;
     let audioStream;
     let rms =0;
@@ -11,8 +12,10 @@ function Audio() {
     let value;
     let micV =0 ; // Variable global para almacenar el valor del micrófono
     let localDbValues = []; // array to store db values for each loop withing the refresh_rate
-    let sendDataDB = []
-    let intervaloSend = 60000
+    
+    //Envio de datos BD
+    let intervaloSend = 1000
+    let decibel;
 
     useEffect(() => {
         initializeAudio();
@@ -20,11 +23,26 @@ function Audio() {
         saveDecibel();
     }, []);
 
+    function initializeAudio() {
+      if (!isAudioInitialized) {
+          navigator.mediaDevices.getUserMedia({ audio: true, video: false })
+          .then((stream) => {
+              audioStream = stream;
+              startAudioProcessing(audioStream);
+              isAudioInitialized = true;
+          })
+          .catch((error) => {
+              console.error('Error al obtener permiso para el micrófono:', error);
+          });
+      }
+  }
+
     const saveDecibel = async () => {
-        setInterval(async function () {
+          setInterval(async function () {
             try {
-                await saveRequest(sendDataDB).then(res => {
+                await saveRequest(decibel).then(res => {
                   if (res.status === 200) {
+                      console.log(res.data)
                       console.log("Decibel enviado");
                     }
                 }    
@@ -55,15 +73,19 @@ function Audio() {
                 if (datas[i] > 120) datas[i] = 120
                 rms += datas[i] * datas[i]
             }
-            rms = Math.sqrt(rms / datas.length);
+            rms = Math.sqrt(rms / (datas.length));
             rmss = rms;
             offset = 0;
             value = rms + offset;
+            
+            //Convierte RMS a decibeles
+            let db = 20 * Math.log10(Math.abs(rms)) * 2//amplitud de referencia
+             // 20 * np.log10(np.abs(plotdata) + 1e-6)
 
             localDbValues.push(value);
 
             // Actualizar la variable global micV con el valor del micrófono
-            micV = rms;
+            micV = db;
           };
     }
 
@@ -102,24 +124,8 @@ function Audio() {
                 db: data[0].value,
                 place: "Galpon 1"
             }
-
-            sendDataDB.push(sendData)
-            console.log(sendData)
+            decibel = sendData
           }, intervalo);
-    }
-
-    function initializeAudio() {
-        if (!isAudioInitialized) {
-            navigator.mediaDevices.getUserMedia({ audio: true, video: false })
-            .then((stream) => {
-                audioStream = stream;
-                startAudioProcessing(audioStream);
-                isAudioInitialized = true;
-            })
-            .catch((error) => {
-                console.error('Error al obtener permiso para el micrófono:', error);
-            });
-        }
     }
 
     function padTwoDigits(num) {
