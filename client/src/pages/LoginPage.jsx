@@ -83,7 +83,7 @@ export function LoginPage() {
         <p className="flex gap-x-2 justify-center">
           <Link to="/register" className="text-sky-500">¿No tienes una cuenta?</Link>
         </p>
-        
+
       </Card>
     </div>
   );

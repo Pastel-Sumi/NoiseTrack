@@ -4,6 +4,7 @@ export const save = async (req, res) => {
     try {
         let count = 0;
         const { date, db, place } = req.body;
+        console.log(req.body)
         
         // if the decibel is greater than 55 it is saved
         if(db > 55){
