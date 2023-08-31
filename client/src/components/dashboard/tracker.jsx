@@ -8,6 +8,7 @@ function Tracker() {
         <h1 className="flex text-5xl py-2 font-bold justify-center">Transmisión de video y decibeles</h1>
         <div className="flex justify-center">
           <Chart/>
+          <img src='http://localhost:8000/video' alt='Video'></img>
         </div>
       </section>
   </div>

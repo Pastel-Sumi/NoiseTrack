@@ -176,7 +176,7 @@ export function Chart() {
             micV = rms;
 
             //Convierte RMS a decibeles
-            let db = 20 * Math.log10(Math.abs(rms)) * 2
+            let db = 20 * Math.log10(Math.abs(rms)) 
 
             localDbValues.push(value);
             // Actualizar la variable global micV con el valor del micrófono

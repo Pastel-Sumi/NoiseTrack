@@ -11,6 +11,7 @@ import Tracker from "./dashboard/tracker";
 import Report from "./dashboard/report";
 import Alert from "./dashboard/alert";
 import Config from "./dashboard/config";
+import { Chart } from "./dashboard/monitoreo";
 
 export function Navbar() {
     //Carga datos de usuario
