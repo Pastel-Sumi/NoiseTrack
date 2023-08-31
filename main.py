@@ -160,6 +160,8 @@ def listen_dB():
                 #     parte_entera = round(parte_decimal)
                 #     current_db = parte_entera
                 #     current_db_epp = current_db-10
+                #     conn.sendall(data)
+
             conn.close()
     except OSError as e:
         print("Error al establecer la conexión:", str(e))
@@ -246,6 +248,7 @@ def main():
     tracker_tracking_start_times = {}
     trackers_exceeded_limit = set()
     aux_db = 0
+    date_time = datetime.now().strftime("%m/%d/%Y, %H:%M:%S")
     for result in model.track(source, show=False, stream=True, agnostic_nms=True, verbose=False, conf=0.5):
         
         frame = result.orig_img
@@ -286,7 +289,7 @@ def main():
                             if duration.seconds > db_time_test[aux_db]/8 and tracker_id not in trackers_exceeded_limit:
                                 message = f" Un trabajador ha excedido el 1/8 de la exposición a {aux_db} [dB] con {duration.seconds}"
                                 print(message)
-                                send_notification(message)
+                                
                                 trackers_exceeded_limit.add(tracker_id)
                                 #image_name = f"{source_name}_{duration.seconds}s_{aux_db}_{datetime.now().strftime('%Y-%m-%d_%H-%M-%S')}_{len(trackers_exceeded_limit)}.jpg"
                                 image_name = datetime.now().strftime("%m-%d-%Y_%H-%M-%S.jpg")
@@ -294,7 +297,7 @@ def main():
                                 data = {'Lugar': source_name,
                                         'Tiempo de exposición': duration.seconds, 
                                         'Decibel expuesto': aux_db, 
-                                        'Fecha y hora': datetime.now().strftime("%m/%d/%Y, %H:%M:%S"),
+                                        'Fecha y hora': date_time,
                                         'Cantidad de personas expuestas': len(trackers_exceeded_limit),
                                         'Ruta foto': image_path}
                                 insert_to_db(data)
@@ -304,6 +307,8 @@ def main():
                                 info_text += f"Decibel expuesto: {data['Decibel expuesto']}\n"
                                 info_text += f"Fecha y hora: {data['Fecha y hora']}\n"
                                 info_text += f"Cantidad de personas expuestas: {data['Cantidad de personas expuestas']} personas\n"
+                                notification_text = f"Tipo de Alerta: 'Tiempo de exposición'\n" + info_text 
+                                send_notification(notification_text)
                                 font = cv2.FONT_HERSHEY_PLAIN
                                 font_scale = 1
                                 font_color = (255, 128, 0) # Naranjo
@@ -315,9 +320,16 @@ def main():
                                 cv2.putText(result.orig_img, info_text, (text_x, text_y), font, font_scale, font_color, thickness)
                                 
                                 cv2.imwrite(image_path, result.orig_img)
-                            elif duration.seconds > db_time_test[aux_db] and tracker_id not in trackers_exceeded_limit:
-                                message = f" Se ha excedido el límite de tiempo de exposición a {aux_db} [dB]. {len(trackers_exceeded_limit)} personas se han visto afectadas"
-                                send_notification(message)
+                        else:
+                            if duration.seconds > db_time_test[aux_db] and tracker_id not in trackers_exceeded_limit:
+                                info_text = f"Lugar: {source_name}\n"
+                                info_text += f"Tiempo de exposicion: {duration.seconds} segundos\n"
+                                info_text += f"Decibel expuesto: {aux_db}\n"
+                                info_text += f"Fecha y hora: {date_time}\n"
+                                info_text += f"Cantidad de personas expuestas: {len(trackers_exceeded_limit)} personas\n"
+                                notification_text = f"Tipo de Alerta: 'Nivel de ruido'\n" + info_text 
+                                # message = f" Se ha excedido el límite de tiempo de exposición a {aux_db} [dB]. {len(trackers_exceeded_limit)} personas se han visto afectadas"
+                                send_notification(notification_text)
             # Reset start times when current_db drops below 15
             elif aux_db < 15:
                 tracker_tracking_start_times = {}    

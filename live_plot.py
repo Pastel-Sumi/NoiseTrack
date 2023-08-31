@@ -14,7 +14,6 @@ import numpy as np
 import sounddevice as sd
 from matplotlib.animation import FuncAnimation
 
-#import dbconnect
 threshold_db = 35  # Umbral en dB -50
 urgent_threshold_db = 45  # Este es el umbral de urgencia en dB -10
 
@@ -124,49 +123,60 @@ def update_plot(frame):
         line.set_ydata(plotdata_db[:, column])
         current_db = str(np.max(plotdata_db))+'[dB]'
         send_current_db(current_db)
-        if np.any(plotdata_db[:, column] > urgent_threshold_db):
-            line.set_color("red")  # Set color to red if urgent_threshold is exceeded
+        #if np.any(plotdata_db[:, column] > 55):
+            #document = {"date": datetime.now().strftime("%H:%M:%S"),
+            #             "dB": np.max(plotdata_db),
+            #             "place": "micrófono asociado al note :v"}
+            # try:
+            #     # result = dbconnect.collection.insert_one(document)
+            #     # print("Documento insertado:", result.inserted_id)
+            # except Exception as e:
+            #     print("Error al insertar el documento:", e)
+    
 
-            current_time = datetime.now().strftime("%H:%M:%S")
+        # if np.any(plotdata_db[:, column] > urgent_threshold_db):
+        #     line.set_color("red")  # Set color to red if urgent_threshold is exceeded
 
-            dif = datetime.strptime(current_time, "%H:%M:%S") - time_threshold
+        #     current_time = datetime.now().strftime("%H:%M:%S")
+
+        #     dif = datetime.strptime(current_time, "%H:%M:%S") - time_threshold
             
             
-            if dif.total_seconds() >= 60:  # Se sobrepaso el nivel por más de un minuto
-                # Envia la notificación al módulo principal
-                print("Se envió aviso urgente al sistema a las",current_time)
-                send_notification(f"Se sobrepasaron los {urgent_threshold_db} dB por {dif.total_seconds()} segundos")
+        #     if dif.total_seconds() >= 60:  # Se sobrepaso el nivel por más de un minuto
+        #         # Envia la notificación al módulo principal
+        #         print("Se envió aviso urgente al sistema a las",current_time)
+        #         send_notification(f"Se sobrepasaron los {urgent_threshold_db} dB por {dif.total_seconds()} segundos")
 
-            send_notification(f"Se sobrepasaron los {threshold_db} dB a las {current_time}")
-            print("Se envió aviso al sistema a las", current_time)
-        # Check if any value exceeds the threshold
-        elif np.any(plotdata_db[:, column] > threshold_db):
-            line.set_color("yellow")  # Set color to red if threshold is exceeded
+        #     send_notification(f"Se sobrepasaron los {threshold_db} dB a las {current_time}")
+        #     print("Se envió aviso al sistema a las", current_time)
+        # # Check if any value exceeds the threshold
+        # elif np.any(plotdata_db[:, column] > threshold_db):
+        #     line.set_color("yellow")  # Set color to red if threshold is exceeded
 
-            current_time = datetime.now().strftime("%H:%M:%S")
-            time_threshold = datetime.strptime(current_time, "%H:%M:%S")
+        #     current_time = datetime.now().strftime("%H:%M:%S")
+        #     time_threshold = datetime.strptime(current_time, "%H:%M:%S")
 
-            # Envia la notificación al módulo principal
-            print("Se envió aviso al sistema a las", current_time)
-            send_notification(f"Se sobrepasaron los {threshold_db} dB a las {current_time}")
-        else:
-            line.set_color("blue")  # Set color to blue if threshold is not exceeded
+        #     # Envia la notificación al módulo principal
+        #     print("Se envió aviso al sistema a las", current_time)
+        #     send_notification(f"Se sobrepasaron los {threshold_db} dB a las {current_time}")
+        # else:
+        #     line.set_color("blue")  # Set color to blue if threshold is not exceeded
 
-            current_time = datetime.now().strftime("%H:%M:%S")
+        #     current_time = datetime.now().strftime("%H:%M:%S")
 
-            time_threshold = datetime.strptime(current_time, "%H:%M:%S")
+        #     time_threshold = datetime.strptime(current_time, "%H:%M:%S")
 
     return lines
 
-def send_notification(message):
-    try:
-        # Establece la conexión con el módulo principal
-        s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        s.connect(("localhost", 5000))
-        s.sendall(message.encode())
-        s.close()
-    except ConnectionRefusedError:
-        print("No se pudo establecer conexión con el módulo principal")
+# def send_notification(message):
+#     try:
+#         # Establece la conexión con el módulo principal
+#         s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+#         s.connect(("localhost", 5000))
+#         s.sendall(message.encode())
+#         s.close()
+#     except ConnectionRefusedError:
+#         print("No se pudo establecer conexión con el módulo principal")
 
 def send_current_db(message):
     try:
@@ -210,7 +220,7 @@ try:
         callback=audio_callback,
     )
     ani = FuncAnimation(fig, update_plot, interval=args.interval, blit=True)
-    # with stream:
-    #     plt.show()
+    with stream:
+        plt.show()
 except Exception as e:
     parser.exit(type(e).__name__ + ": " + str(e))
