@@ -1,5 +1,4 @@
 
-import Audio from "./audio";
 import { Chart } from "./monitoreo";
 
 function Tracker() {
