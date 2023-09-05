@@ -1,0 +1,359 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Gráfico Dinámico con Datos de Micrófono</title>
+  <!-- Agrega las referencias a las bibliotecas ECharts y ECharts Gl para graficar -->
+  <script src="https://cdn.jsdelivr.net/npm/echarts@5.2.2/dist/echarts.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/echarts-gl@1.1.1/dist/echarts-gl.min.js"></script>
+  <style>
+    #aviso {
+      position: absolute;
+      top: 50px; /* Ajusta la posición vertical según tus necesidades */
+      right: 20px; /* Ajusta la posición horizontal según tus necesidades */
+      padding: 10px;
+      border: 1px solid black;
+      border-radius: 5px;
+      transition: background-color 0.5s;
+      display: none;
+    }
+
+    .aviso.amarillo {
+      background-color: yellow;
+    }
+
+    .aviso.rojo {
+      background-color: red;
+      color: white;
+    }
+
+  </style>
+</head>
+<body>
+  <h1>Gráfico Dinámico con Datos de Micrófono</h1>
+  <button id="toggleRangoButton-5M">Gráfico 5 Minutos</button>
+  <button id="toggleRangoButton-30M">Gráfico 30 Minutos</button>
+  <button id="toggleRangoButton-1H">Gráfico 1 Hora</button>
+  <button id="toggleRangoButton-4H">Gráfico 4 Horas</button>
+  <div id="chart" style="width: 800px; height: 400px;"></div>
+  <div id="timeElapsed">Tiempo transcurrido: 0 segundos</div>
+  <div id="aviso" class="aviso amarillo">Aviso</div>
+
+  <script>
+    // Inicializar el gráfico con ECharts
+    const timeElapsedElement = document.getElementById('timeElapsed');
+
+    // Variable para llevar un registro del tiempo transcurrido
+    let timeElapsedSeconds = 0;
+    var myChart = echarts.init(document.getElementById('chart'));
+    let localDbValues = [];     // array to store db values for each loop withing the refresh_rate
+    let refresh_rate = 500;
+    let color = 'green';
+    let stream;
+    let offset = 0;
+    let date;
+    let rmss;
+    let rms = 0;
+    let volume;
+    let intervalo_tiempo_precaucion = 60;
+    let intervalo_tiempo_aviso = 120;
+    let titulo = "Gráfico de 5 miuntos"
+    let limite_text = "en los últimos 5 minutos.";
+
+
+    let audioStream;
+    let isAudioInitialized = false;
+    let micV = 0; // Variable global para almacenar el valor del micrófono
+
+    // Función para actualizar el aviso
+    function actualizarAviso() {
+      const avisoElement = document.getElementById('aviso');
+      const conteo = contarValoresMayoresA20(data);
+
+      const minutos = Math.floor(conteo / 60);
+      const segundos = conteo % 60;
+
+      if (conteo > intervalo_tiempo_aviso) {
+        avisoElement.classList.remove('amarillo');
+        avisoElement.classList.add('rojo');
+        avisoElement.textContent = `Aviso: se han sobrepasado los 85 decibeles durante ${minutos} minutos y ${segundos} segundos, ${limite_text}`;
+      } else if (conteo > intervalo_tiempo_precaucion) {
+        avisoElement.classList.remove('rojo');
+        avisoElement.classList.add('amarillo');
+        avisoElement.textContent = `Precaución: se han sobrepasado los 85 decibeles durante ${minutos} minutos y ${segundos} segundos, ${limite_text}`;
+      } else {
+        // Ocultar el aviso si el conteo es menor o igual a 60
+        avisoElement.style.display = 'none';
+      }
+
+      // Ocultar el aviso si el conteo es menor o igual a 60
+      if (conteo <= intervalo_tiempo_precaucion) {
+        avisoElement.style.display = 'none';
+      } else {
+        avisoElement.style.display = 'block';
+      }
+    }
+
+    function updateElapsedTime() {
+      timeElapsedSeconds++;
+      timeElapsedElement.textContent = `Tiempo transcurrido: ${timeElapsedSeconds} segundos`;
+    }
+   /*  function initializeAudio() {
+        if (!isAudioInitialized) {
+            navigator.mediaDevices.getUserMedia({ audio: true, video: false })
+                .then((stream) => {
+                    audioStream = stream;
+                    startAudioProcessing(audioStream);
+                    isAudioInitialized = true;
+                })
+                .catch((error) => {
+                    console.error('Error al obtener permiso para el micrófono:', error);
+                });
+        }
+    } */
+
+    /* function startAudioProcessing(audioStream) {
+        const context = new AudioContext();
+        const source = context.createMediaStreamSource(audioStream);
+
+        const processor = context.createScriptProcessor(2048, 1, 1);
+        const analyser = context.createAnalyser();
+        analyser.smoothingTimeConstant = 0.8;
+        analyser.fftSize = 256;
+
+        source.connect(analyser);
+        analyser.connect(processor);
+        processor.connect(context.destination);
+        processor.onaudioprocess = () => {
+            let datas = new Uint8Array(analyser.frequencyBinCount);
+            analyser.getByteFrequencyData(datas);
+            rms = 0;
+
+            for (var i = 0; i < datas.length; i++) {
+                if (datas[i] > 120) datas[i] = 120
+                rms += datas[i] * datas[i]
+            }
+            rms = Math.sqrt(rms / datas.length);
+            rmss = rms;
+            offset = 0;
+            value = rms + offset;
+            localDbValues.push(value);
+
+            // Actualizar la variable global micV con el valor del micrófono
+            micV = rms;
+          };
+    } */
+
+
+
+    // Función para obtener el valor del micrófono
+    function obtenerValorDelMicrofono() {
+        return micV; // Devolver el valor del micrófono almacenado en la variable global
+    }
+    function contarValoresMayoresA20(data) {
+        return data.reduce((count, item) => {
+            // Supongo que el valor que deseas verificar está en item.value[1]
+            if (item.value[1] > 20) {
+                return count + 1;
+            }
+            return count;
+        }, 0);
+    }
+
+    function randomData() {
+      now2 = now2 + intervalo;
+      console.log(intervalo)
+      // Reemplaza el valor aleatorio con el valor del micrófono
+      var micValue = obtenerValorDelMicrofono(); // Debes implementar esta función
+      return {
+        name: now2,
+        value: [[now2], micValue]
+      };
+    }
+    let super_data = [];
+    let limite =300;
+    let data = [];
+
+    var now2 = new Date().getTime();
+    let oneDay = 24 * 3600 * 1000;
+    let highValuesSeries = [];
+    const toggleRangoButton_5M = document.getElementById('toggleRangoButton-5M');
+    const toggleRangoButton_30M = document.getElementById('toggleRangoButton-30M');
+    const toggleRangoButton_1H = document.getElementById('toggleRangoButton-1H');
+    const toggleRangoButton_4H = document.getElementById('toggleRangoButton-4H');
+    let rango = 5 * 60 * 1000; // Valor inicial del rango (5 minutos)
+    let intervalo = 1000;
+    let intervalId;
+
+
+    toggleRangoButton_5M.addEventListener('click', () => {
+      titulo = "Gráfico de 5 minutos"
+      // Cambia el valor de rango entre 5 minutos (300,000 ms) y 30 minutos (1,800,000 ms)
+      limite = 300;
+      intervalo_tiempo_precaucion =  60;
+      intervalo_tiempo_aviso =  120;
+      intervalo = 1000;
+      rango =  5 * 60 * 1000;
+      limite_text = "en los últimos 5 minutos.";
+      clearInterval(intervalId);
+      ejecutarIntervalo();
+      
+      //console.log(`Nuevo valor de rango: ${rango} ms`);
+    });
+    toggleRangoButton_30M.addEventListener('click', () => {
+      titulo = "Gráfico de 30 minutos"
+      // Cambia el valor de rango entre 5 minutos (300,000 ms) y 30 minutos (1,800,000 ms)
+      limite =  300 * 6;
+      intervalo_tiempo_precaucion =  60 * 3;
+      intervalo_tiempo_aviso =  60 * 5;
+      intervalo =  1000;
+      rango =  30 * 60 * 1000;
+      limite_text = "en los últimos 30 minutos.";
+      clearInterval(intervalId);
+      ejecutarIntervalo();
+      
+      //console.log(`Nuevo valor de rango: ${rango} ms`);
+    });
+    toggleRangoButton_1H.addEventListener('click', () => {
+      titulo = "Gráfico de 1 hora"
+      // Cambia el valor de rango entre 5 minutos (300,000 ms) y 30 minutos (1,800,000 ms)
+      limite =  3600;
+      intervalo_tiempo_precaucion =  720;
+      intervalo_tiempo_aviso =  900;
+      intervalo =  1000;
+      rango =  2 *30 * 60 * 1000;
+      limite_text = "en los la última hora.";
+      clearInterval(intervalId);
+      ejecutarIntervalo();
+      
+      //console.log(`Nuevo valor de rango: ${rango} ms`);
+    });
+    toggleRangoButton_4H.addEventListener('click', () => {
+      titulo = "Gráfico de 4 horas"
+      // Cambia el valor de rango entre 5 minutos (300,000 ms) y 30 minutos (1,800,000 ms)
+      limite =  14400;
+      intervalo_tiempo_precaucion =  2880;
+      intervalo_tiempo_aviso =  3600;
+      intervalo =  1000;
+      rango =  4 *2 *30 * 60 * 1000;
+      limite_text = "en las últimas 4 horas.";
+      clearInterval(intervalId);
+      ejecutarIntervalo();
+      
+      //console.log(`Nuevo valor de rango: ${rango} ms`);
+    });
+    initializeAudio();
+    for (var i = 0; i < 14400; i++) {
+      var micValue = obtenerValorDelMicrofono();
+      super_data.push(randomData());
+    }
+    data = super_data.slice(-limite);
+
+    var option = {
+      title: {
+        text:  titulo
+      },
+      tooltip: {
+        trigger: 'axis',
+        formatter: function (params) {
+          params = params[0];
+          var date = params.name;
+          return date + ' : ' + params.value[1];
+        },
+        axisPointer: {
+          animation: true
+        }
+      },
+      xAxis: {
+        type: 'time',
+        splitLine: {
+          show: true
+        }
+      },
+      yAxis: {
+        type: 'value',
+        boundaryGap: [0, '100%'],
+        splitLine: {
+          show: true
+        }
+      },
+      series: [
+        {
+          name: 'Fake Data',
+          type: 'line',
+          showSymbol: false,
+          data: data
+        },
+          {
+            name: 'High Values',
+            type: 'scatter', // Usar un gráfico de dispersión para los valores altos
+            data: highValuesSeries,
+            symbolSize: 12, // Tamaño del símbolo
+        }
+      ]
+    };
+
+    myChart.setOption(option);
+    function ejecutarIntervalo() {
+
+
+    intervalId = setInterval(function () {
+      let a =  new Date().getTime();
+      super_data.shift(); // Eliminar el dato más antiguo
+      super_data.push(randomData()); // Agregar un nuevo dato
+      data = super_data.slice(-limite);
+      console.log(data.length)
+      actualizarAviso();
+      //console.log(data);
+      updateElapsedTime();
+
+      myChart.setOption({
+        title: {
+          text:  titulo
+        },
+        xAxis: {
+          min: now2 - rango,
+          max: now2
+        },
+        visualMap: [
+        {
+          show: false,
+          type: 'continuous',
+          seriesIndex: 0,
+          min: 0,
+          max: 120,
+          inRange: {
+            // The visual configuration in the selected range
+            color: ['blue','green', 'yellow','orange' ,'red'], // A list of colors that defines the graph color mapping
+            // the minimum value of the data is mapped to 'blue', and
+            // the maximum value is mapped to 'red', // the maximum value is mapped to 'red', // the maximum value is mapped to 'red'.
+            // The rest is automatically calculated linearly.
+            //symbolSize: [30] // Defines the mapping range for the graphic size.
+            // The minimum value of the data is mapped to 30, // and the maximum value is mapped to 100.
+            // The maximum value is mapped to 100.
+            // The rest is calculated linearly automatically.
+          },
+          outOfRange: {
+            // Check the out of range visual configuration
+            symbolSize: [30, 100]
+          }
+        },
+        {
+          show: false,
+          type: 'continuous',
+          seriesIndex: 1,
+          dimension: 0,
+
+        }
+      ],
+        series: [
+          {
+            data: data
+          }
+        ]
+      });
+    }, intervalo);
+  }
+  ejecutarIntervalo();
+  </script>
+</body>
+</html>

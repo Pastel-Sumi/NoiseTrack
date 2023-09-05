@@ -1,0 +1,36 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+body {
+  background: #202020;
+  color: white;
+}
+
+.content-container {
+  height: calc(99vh - theme("spacing.20"));
+}
+
+.avatar {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 40px;
+  height: 40px;
+  background: #ffffff;
+  color: #000000;
+  margin-left: 1em;
+  border-radius: 50%;
+  text-transform: uppercase;
+}
+
+.flexbox-container {
+  display: flex;
+  height: calc(99vh - theme("spacing.20"));
+}
+
+.video-container {
+  width: 100%;
+  height: calc(99vh - theme("spacing.20"));
+}
+
