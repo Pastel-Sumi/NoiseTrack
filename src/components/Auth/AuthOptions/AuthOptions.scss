@@ -1,0 +1,29 @@
+@import "~/src/scss/index";
+
+.auth-options {    
+    > h1 {
+        font-size: 40px;
+        color: $font-light;
+        font-weight: bold;
+        text-align: center;
+        margin-bottom: 50px;
+    }
+
+    .register {
+        color: $link;
+        font-size: 17px;
+    }
+
+    .ui.button.login,
+    .ui.button.register {
+        width: 40%;
+        margin-bottom: 10px;
+        border-radius: 10px;
+        padding: 13px 0;
+        font-size: 17px;
+        background-color: $primary-color-hover;
+        color: $font-light;
+    }
+
+
+}

@@ -1,0 +1,57 @@
+@import "~/src/scss/index";
+
+.login-options {    
+    text-align: center;
+
+    > h1 {
+        font-size: 40px;
+        color: $font-light;
+        font-weight: bold;
+        text-align: center;
+        margin-bottom: 25px;
+    }
+
+    .description {
+        font-size: 17px;
+        color: $font-light;
+        margin-bottom: 25px;
+    }
+
+    .register {
+        color: $link;
+        font-size: 15px;
+        cursor: pointer;    
+    }
+
+    .error {
+        font-size: 14px;
+        color: $danger2;
+        text-align: left;
+    }
+
+
+    .ui.button.login,
+    .ui.button.register {
+        margin-bottom: 10px;
+        margin-top: 15px;
+        border-radius: 10px;
+        padding: 13px 0;
+        font-size: 15px;
+        background-color: $primary-color-hover;
+        color: $font-light;
+    }
+
+    .ui.form {
+        .field {
+            .input {
+                margin-bottom: 10px;
+
+                input {
+                    font-size: 15px;
+                }
+            }
+        }
+    }
+
+
+}

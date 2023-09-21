@@ -1,0 +1,50 @@
+.ui.form {
+    align-items: center;
+
+    .field {
+        .input {
+            input {
+                background-color: $primary-color-hover;
+                color: $font-light;
+
+                &:hover,
+                &:active,
+                &:focus {
+                    background-color: $primary-color-hover;
+                }
+            }
+
+            i {
+            color: $font-light;
+            }
+        }
+
+        .ui.button {
+            width: 45%;
+            margin-bottom: 10px;
+            margin-top: 15px;
+            border-radius: 10px;
+            padding: 13px 0px;
+            font-size: 15px;
+            background-color: $primary-color-hover;
+            color: $font-light;
+        }
+        
+        
+    }
+
+    .field.error{
+        .ui.input {
+            input {
+                background-color: $primary-color-hover ;
+                border: 1px solid $danger2;
+                color: $danger2;
+            }
+
+            i {
+                color: $danger2;
+            }
+        }
+    }
+    
+}

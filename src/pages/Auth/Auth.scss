@@ -1,0 +1,21 @@
+@import "~/src/scss/index";
+
+.auth {
+    height: 100vh;
+    display: flex;
+    align-items: center;
+    background-color: $background-primary;
+    justify-content: center;
+
+    &__content {
+        width: 500px;
+        border-radius: 0.375rem;
+        background-color: $primary-color;
+        padding: 2.5rem;
+
+        &-logo {
+            width: 130px;
+            margin: 0 auto;
+        }
+    }
+}

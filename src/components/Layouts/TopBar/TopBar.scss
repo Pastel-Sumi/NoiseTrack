@@ -1,0 +1,48 @@
+@import "~/src/scss/index";
+
+.top-bar {
+    width: 100%;
+    height: 100%;
+    padding: 0;
+
+    .logo {
+        width:calc(20vh - 5rem);
+        padding-left: 0.5rem;
+        padding-right: 0.5rem;
+        cursor: pointer; 
+    }
+
+    .typo { 
+        font-size: 30px;
+    }
+
+    .logout,
+    .home{
+        align-items: center;
+        display: flex;
+        padding-right: 0.5rem;
+        font-size: 15px;
+    }
+
+    .logout{
+        cursor: pointer; 
+
+    }
+
+    .icon {
+        font-size: 1.5rem !important;
+    }
+
+    &__menu {
+        font-size: 1.5rem !important;
+    }
+
+    &__content {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 0.5rem;
+    }
+
+
+}

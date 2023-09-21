@@ -1,0 +1,99 @@
+@import "~/src/scss/index";
+
+$menuWight: 220px;
+$sizeAvatar: 40px;
+
+.left-menu {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    height: 100%;
+    position: relative;
+
+    &__menu-devider {
+        border-top: 1px solid $primary-color-hover;
+        height: 2px;
+        max-width: $menuWight;
+        padding: 0;
+        margin: 0.5rem 0 auto;
+        margin-bottom: 0.5rem;
+      }
+
+    &__menu-accordion {
+        padding-left:  1rem;
+    }
+
+    &__user {
+        display: flex;
+        align-items: center;
+        padding-bottom: 1rem;
+        padding-right: 0.5rem;
+        font-size: 15px;
+    }
+   
+    &__avatar {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        width: $sizeAvatar;
+        height: $sizeAvatar;
+        background: $font-light;
+        color: $font-dark;
+        margin-top: 0.5em;
+        margin-bottom: 0.5em;
+        border-radius: 50%;
+        text-transform: uppercase;
+        font-weight: 200;
+    }
+
+    &__user-info {
+        padding-left: 0.5rem;
+        width: 160px;
+        word-wrap: break-word ;
+        p{
+            margin: 0;
+        }
+    }
+
+    .title {
+        color: $font-light !important;
+        justify-content: space-between;
+
+        i{
+            margin-left: 60%;
+            display: inline;
+            font-size: 1.5rem;
+        }
+
+        &.active {
+            color: $font-light !important;
+            i{
+                color: $font-light !important;
+            }
+        }
+    }
+    .ui.menu.vertical.secondary.fluid{
+        margin: 0;
+        
+        .item {
+            border-radius: 0 !important;
+            color: $font-grey !important;
+            font-size: 15px;
+
+            i {
+                color: $font-grey !important;
+                font-size: 1.2rem;
+                float: left;
+                margin-left: 0 !important;
+                margin-right: 1.6rem !important;
+            }
+
+            &.active {
+                color: $font-light !important;
+                i{
+                    color: $font-light !important;
+                }
+            }
+        }
+    }
+}

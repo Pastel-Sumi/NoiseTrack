@@ -1,0 +1,62 @@
+@import "~/src/scss/index";
+
+$menuWight: 220px;
+$topBarHeight: calc(20vh - 5rem);
+
+.logged-layout{
+    height: 100vh;
+    background-color: $background-primary;
+
+    .translate-x-0{
+        transform: translate(0px); 
+        transition: 1s;
+    }
+
+    .translate-x-220 {
+        transform: translate(-220px);
+        transition: 1s;
+    }
+
+    &__content {
+        height: 100%;
+    }
+
+    &__top-bar {
+        position: relative;
+        padding: 1rem;
+        width: 100%;
+        height: $topBarHeight;
+        align-items: center;
+        z-index: 1;
+        display: flex;
+        background-color: $primary-color;
+    }
+
+    &__left-menu { 
+        float: left;
+        padding: 0.5rem;
+        background-color: $primary-color;
+        height: calc(100% - $topBarHeight);
+        width: $menuWight;
+        transform: translateX(0px);
+    }
+
+    &__children-content {
+        float: left;
+        width: calc(100% - $menuWight);
+        &::-webkit-scrollbar{
+            display: none;
+        }
+
+        &__translate-children-x-0{
+            transition: 1s;
+            width: calc(100% - $menuWight);
+        }
+    
+        &__translate-children-x-220 {
+            transform: translate(-$menuWight);
+            transition: 1s;
+            width: 100%;
+        }
+    }
+}
