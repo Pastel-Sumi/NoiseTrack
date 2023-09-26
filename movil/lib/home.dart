@@ -1,13 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/src/material/colors.dart';
-import 'package:noisetrack/login.dart';
 import 'package:noisetrack/services/notification_services.dart';
-
-void main() async{
-  WidgetsFlutterBinding.ensureInitialized();
-  await initNotifications();
-  runApp(const MyApp());
-}
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
@@ -43,16 +35,17 @@ class MyApp extends StatelessWidget {
           background: Colors.black87,
           onBackground: Colors.orange,
           surface: Colors.black87,
-          onSurface: Colors.black87,
+          onSurface: Colors.white70,
           error: Colors.brown,
           onError: Colors.grey,
         ),
         useMaterial3: true,
       ),
-      home: const LoginPage(),
+      home: const MyApp(),
     );
   }
 }
+
 
 class MyHomePage extends StatefulWidget {
   const MyHomePage({super.key, required this.title});
@@ -94,11 +87,11 @@ class ListTileExample extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-          title: const Text('Alertas del día',
-          style: TextStyle(
-            color: Colors.white
-          )),
-          backgroundColor: Colors.black12,
+        title: const Text('Alertas del día',
+            style: TextStyle(
+                color: Colors.white
+            )),
+        backgroundColor: Colors.black12,
       ),
       body: ListView(
         children: <Widget>[
@@ -165,11 +158,11 @@ class _MyHomePageState extends State<MyHomePage> {
             width: 70,
             height: 70,
             decoration: const BoxDecoration(
-              image: DecorationImage(
-                image: AssetImage('assets/avatar.png'),
-                fit: BoxFit.cover,
-              ),
-              shape: BoxShape.circle
+                image: DecorationImage(
+                  image: AssetImage('assets/avatar.png'),
+                  fit: BoxFit.cover,
+                ),
+                shape: BoxShape.circle
             ),
           )
         ],
