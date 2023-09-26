@@ -1,0 +1,79 @@
+/* Estilos generales */
+.react-calendar {
+    font-family: Arial, sans-serif;
+    background-color: #222; /* Fondo oscuro */
+    color: #0a0909; /* Texto blanco */
+    border: 1px solid #333; /* Borde oscuro */
+  }
+  
+  /* Estilos del encabezado del calendario */
+  .react-calendar__navigation {
+    background-color: #544d4d; /* Fondo del encabezado oscuro */
+  }
+  
+  .react-calendar__navigation button {
+    color: #080707; /* Texto blanco en botones de navegación */
+  }
+  
+  /* Estilos de los días */
+  .react-calendar__tile {
+    background-color: #333; /* Fondo oscuro para los cuadrados de los días */
+    border: 1px solid #827373; /* Borde oscuro alrededor de los días */
+  }
+  
+  /* Estilos de los días seleccionados */
+  .react-calendar__tile--active {
+    background-color: #444; /* Fondo más oscuro para los días seleccionados */
+    color: #d41919; /* Texto blanco para los días seleccionados */
+    border: 1px solid #666; /* Borde más oscuro alrededor de los días seleccionados */
+  }
+  
+  /* Estilos de los días en el mes anterior o siguiente */
+  .react-calendar__tile--tileDisabled {
+    color: #e8b9b9; /* Texto gris para los días fuera del mes actual */
+  }
+  
+  /* Estilos de los números de la fecha */
+  .react-calendar__tile abbr {
+    color: #efefef; /* Color del número de la fecha */
+  }
+  
+  /* Estilos de los días de la semana */
+  .react-calendar__month-view__weekdays__weekday abbr {
+    color: #fbf9f9; /* Color de los días de la semana */
+  }
+  
+  /* Estilos de los nombres de los días de la semana */
+  .react-calendar__month-view__days__day--weekday {
+    color: #bb2020; /* Color de los nombres de los días de la semana */
+  }
+  /* Estilos para el rectángulo de la fecha general */
+.react-calendar__tile--title {
+    background-color: #333; /* Fondo oscuro para el rectángulo de la fecha general */
+    color: #d50a0a; /* Texto blanco para la fecha general */
+    border: 1px solid #333; /* Borde oscuro alrededor del rectángulo de la fecha general */
+    font-weight: bold; /* Texto en negrita */
+  }
+  .react-calendar__navigation__arrow {
+    background-color: #333; /* Fondo oscuro para los cuadrados de los días */
+    border: 1px solid #827373; /* Borde oscuro alrededor de los días */
+  }
+  .react-calendar__navigation__label {
+    background-color: #333; /* Fondo oscuro para los cuadrados de los días */
+    border: 1px solid #827373; /* Borde oscuro alrededor de los días */
+  }
+  /* Estilos para el botón que abre y cierra el calendario */
+.calendario-button {
+    background-color: #333; /* Fondo oscuro para el botón */
+    border: 1px solid #827373; /* Borde oscuro alrededor del botón */
+    color: #fff; /* Texto blanco en el botón */
+    padding: 10px 20px; /* Espaciado interno del botón */
+    cursor: pointer; /* Cambiar el cursor al pasar el ratón sobre el botón */
+  }
+  
+  /* Estilos cuando se pasa el ratón sobre el botón */
+  .calendario-button:hover {
+    background-color: #444; /* Fondo ligeramente más oscuro al pasar el ratón */
+  }
+  
+  
