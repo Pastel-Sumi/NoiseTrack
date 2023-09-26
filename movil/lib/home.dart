@@ -1,6 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:noisetrack/services/notification_services.dart';
 
+//Firebase
+import 'package:firebase_core/firebase_core.dart';
+import 'package:noisetrack/api/firebase_service.dart';
+import 'api/firebase_api.dart';
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
 
@@ -87,44 +91,66 @@ class ListTileExample extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Alertas del día',
-            style: TextStyle(
-                color: Colors.white
-            )),
-        backgroundColor: Colors.black12,
+          title: const Text('Alertas del día',
+          style: TextStyle(
+            color: Colors.white
+          )),
+          backgroundColor: Colors.black12,
       ),
-      body: ListView(
-        children: <Widget>[
-          Card(
-            color: Colors.red[300],
-            child: ListTile(
-              leading: Icon(Icons.warning),
-              title: Text('5 personas expuestas por 10 [s] a 90 [db] en sala 3'),
-            ),
-          ),
-          Card(
-            color: Colors.red[300],
-            child: ListTile(
-              leading: Icon(Icons.warning),
-              title: Text('5 personas expuestas por 9 [s] a 90 [db] en sala 3'),
-            ),
-          ),
-          Card(
-            color: Colors.yellow[300],
-            child: ListTile(
-              leading: Icon(Icons.crisis_alert),
-              title: Text('5 personas expuestas por 8 [s] a 90 [db] en sala 3'),
-            ),
-          ),
-          Card(
-            color: Colors.yellow[300],
-            child: ListTile(
-              leading: Icon(Icons.crisis_alert),
-              title: Text('5 personas expuestas por 57 [s] a 90 [db] en sala 3'),
-            ),
-          ),
-        ],
-      ),
+      body: FutureBuilder(
+        future: getNotifications(),
+        builder: ((context, snapshot) {
+          if (snapshot.hasData){
+            return ListView.builder(
+              itemCount: snapshot.data?.length,
+              itemBuilder: (context, index) {
+                var workers = snapshot.data?[index]['workers'].toString();
+                var time = snapshot.data?[index]['time'].toString();
+                var decibels = snapshot.data?[index]['db'].toString();
+                var place = snapshot.data?[index]['place'];
+                return Text('$workers personas expuestas por $time [s] a $decibels [db] en $place');
+                //+'personas expuestas por ' + snapshot.data?[index]['time'] + '[s] a ' + snapshot.data?[index]['db']+ '[db] en ' + snapshot.data?[index]['place']
+            },
+          );
+        }else{
+          return const Center(
+            child: CircularProgressIndicator()
+          ); 
+        }
+
+        })),
+      // ListView(
+      //   children: <Widget>[
+      //     Card(
+      //       color: Colors.red[300],
+      //       child: ListTile(
+      //         leading: Icon(Icons.warning),
+      //         title: Text('5 personas expuestas por 10 [s] a 90 [db] en sala 3'),
+      //       ),
+      //     ),
+      //     Card(
+      //       color: Colors.red[300],
+      //       child: ListTile(
+      //         leading: Icon(Icons.warning),
+      //         title: Text('5 personas expuestas por 9 [s] a 90 [db] en sala 3'),
+      //       ),
+      //     ),
+      //     Card(
+      //       color: Colors.yellow[300],
+      //       child: ListTile(
+      //         leading: Icon(Icons.crisis_alert),
+      //         title: Text('5 personas expuestas por 8 [s] a 90 [db] en sala 3'),
+      //       ),
+      //     ),
+      //     Card(
+      //       color: Colors.yellow[300],
+      //       child: ListTile(
+      //         leading: Icon(Icons.crisis_alert),
+      //         title: Text('5 personas expuestas por 57 [s] a 90 [db] en sala 3'),
+      //       ),
+      //     ),
+      //   ],
+      // ),
     );
   }
 }

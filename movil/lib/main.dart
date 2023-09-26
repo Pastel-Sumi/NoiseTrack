@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/src/material/colors.dart';
+
+//Firebase
 import 'package:firebase_core/firebase_core.dart';
 import 'package:noisetrack/api/firebase_service.dart';
 import 'api/firebase_api.dart';
