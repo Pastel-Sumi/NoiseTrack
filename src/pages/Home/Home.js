@@ -45,7 +45,7 @@ export function Home() {
 
 <div>
       <h1>Calendario</h1>
-      <button onClick={handleToggleCalendar}>
+      <button onClick={handleToggleCalendar} className="calendario-button">
         {showCalendar ? 'Cerrar Calendario' : 'Abrir Calendario'}
       </button>
       {showCalendar && (
