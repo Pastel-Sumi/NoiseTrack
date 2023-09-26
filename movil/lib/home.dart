@@ -1,19 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/src/material/colors.dart';
-import 'package:firebase_core/firebase_core.dart';
-import 'package:noisetrack/api/firebase_service.dart';
-import 'api/firebase_api.dart';
-
-import 'package:noisetrack/login.dart';
 import 'package:noisetrack/services/notification_services.dart';
-
-void main() async{
-  WidgetsFlutterBinding.ensureInitialized();
-  await initNotifications();
-  await Firebase.initializeApp();
-  await FirebaseApi().initNotifications();
-  runApp(const MyApp());
-}
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
@@ -49,16 +35,17 @@ class MyApp extends StatelessWidget {
           background: Colors.black87,
           onBackground: Colors.orange,
           surface: Colors.black87,
-          onSurface: Colors.black87,
+          onSurface: Colors.white70,
           error: Colors.brown,
           onError: Colors.grey,
         ),
         useMaterial3: true,
       ),
-      home: const LoginPage(),
+      home: const MyApp(),
     );
   }
 }
+
 
 class MyHomePage extends StatefulWidget {
   const MyHomePage({super.key, required this.title});
@@ -100,66 +87,44 @@ class ListTileExample extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-          title: const Text('Alertas del día',
-          style: TextStyle(
-            color: Colors.white
-          )),
-          backgroundColor: Colors.black12,
+        title: const Text('Alertas del día',
+            style: TextStyle(
+                color: Colors.white
+            )),
+        backgroundColor: Colors.black12,
       ),
-      body: FutureBuilder(
-        future: getNotifications(),
-        builder: ((context, snapshot) {
-          if (snapshot.hasData){
-            return ListView.builder(
-              itemCount: snapshot.data?.length,
-              itemBuilder: (context, index) {
-                var workers = snapshot.data?[index]['workers'].toString();
-                var time = snapshot.data?[index]['time'].toString();
-                var decibels = snapshot.data?[index]['db'].toString();
-                var place = snapshot.data?[index]['place'];
-                return Text('$workers personas expuestas por $time [s] a $decibels [db] en $place');
-                //+'personas expuestas por ' + snapshot.data?[index]['time'] + '[s] a ' + snapshot.data?[index]['db']+ '[db] en ' + snapshot.data?[index]['place']
-            },
-          );
-        }else{
-          return const Center(
-            child: CircularProgressIndicator()
-          ); 
-        }
-
-        })),
-      // ListView(
-      //   children: <Widget>[
-      //     Card(
-      //       color: Colors.red[300],
-      //       child: ListTile(
-      //         leading: Icon(Icons.warning),
-      //         title: Text('5 personas expuestas por 10 [s] a 90 [db] en sala 3'),
-      //       ),
-      //     ),
-      //     Card(
-      //       color: Colors.red[300],
-      //       child: ListTile(
-      //         leading: Icon(Icons.warning),
-      //         title: Text('5 personas expuestas por 9 [s] a 90 [db] en sala 3'),
-      //       ),
-      //     ),
-      //     Card(
-      //       color: Colors.yellow[300],
-      //       child: ListTile(
-      //         leading: Icon(Icons.crisis_alert),
-      //         title: Text('5 personas expuestas por 8 [s] a 90 [db] en sala 3'),
-      //       ),
-      //     ),
-      //     Card(
-      //       color: Colors.yellow[300],
-      //       child: ListTile(
-      //         leading: Icon(Icons.crisis_alert),
-      //         title: Text('5 personas expuestas por 57 [s] a 90 [db] en sala 3'),
-      //       ),
-      //     ),
-      //   ],
-      // ),
+      body: ListView(
+        children: <Widget>[
+          Card(
+            color: Colors.red[300],
+            child: ListTile(
+              leading: Icon(Icons.warning),
+              title: Text('5 personas expuestas por 10 [s] a 90 [db] en sala 3'),
+            ),
+          ),
+          Card(
+            color: Colors.red[300],
+            child: ListTile(
+              leading: Icon(Icons.warning),
+              title: Text('5 personas expuestas por 9 [s] a 90 [db] en sala 3'),
+            ),
+          ),
+          Card(
+            color: Colors.yellow[300],
+            child: ListTile(
+              leading: Icon(Icons.crisis_alert),
+              title: Text('5 personas expuestas por 8 [s] a 90 [db] en sala 3'),
+            ),
+          ),
+          Card(
+            color: Colors.yellow[300],
+            child: ListTile(
+              leading: Icon(Icons.crisis_alert),
+              title: Text('5 personas expuestas por 57 [s] a 90 [db] en sala 3'),
+            ),
+          ),
+        ],
+      ),
     );
   }
 }
@@ -193,11 +158,11 @@ class _MyHomePageState extends State<MyHomePage> {
             width: 70,
             height: 70,
             decoration: const BoxDecoration(
-              image: DecorationImage(
-                image: AssetImage('assets/avatar.png'),
-                fit: BoxFit.cover,
-              ),
-              shape: BoxShape.circle
+                image: DecorationImage(
+                  image: AssetImage('assets/avatar.png'),
+                  fit: BoxFit.cover,
+                ),
+                shape: BoxShape.circle
             ),
           )
         ],
