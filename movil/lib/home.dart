@@ -108,7 +108,24 @@ class ListTileExample extends StatelessWidget {
                 var time = snapshot.data?[index]['time'].toString();
                 var decibels = snapshot.data?[index]['db'].toString();
                 var place = snapshot.data?[index]['place'];
-                return Text('$workers personas expuestas por $time [s] a $decibels [db] en $place');
+                var type = snapshot.data?[index]['type'];
+                var color;
+                var icon;
+                if (type == 1){
+                  color = Colors.red[300];
+                  icon = const Icon(Icons.warning);
+                }
+                else{
+                  color = Colors.yellow[300];
+                  icon = const Icon(Icons.crisis_alert);
+                }
+                return Card(
+                  color: color,
+                  child: ListTile(
+                    leading: icon,
+                    title: Text('$workers personas expuestas por $time [s] a $decibels [db] en $place'),
+                  ),
+                );
                 //+'personas expuestas por ' + snapshot.data?[index]['time'] + '[s] a ' + snapshot.data?[index]['db']+ '[db] en ' + snapshot.data?[index]['place']
             },
           );
