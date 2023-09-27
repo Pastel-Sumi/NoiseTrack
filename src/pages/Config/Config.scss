@@ -1,0 +1,12 @@
+@import "~/src/scss/index";
+
+.config-container {
+    justify-content: center;
+    margin: 1.5rem;
+
+    &__title {
+        text-align:center;
+        font-size: 40px;
+        margin: 1.5rem;
+    }
+}

@@ -15,7 +15,6 @@ export function Alert() {
             try{
                 const response = await alertController.getAll();
                 setAlerts(response)
-                console.log(await alertController.getAlertToday(new Date(), new Date()) )
             } catch (error){
                 console.log(error)
             }

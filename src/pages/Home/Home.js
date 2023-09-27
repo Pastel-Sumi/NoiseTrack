@@ -29,14 +29,13 @@ export function Home() {
             value={selectedSource}
             onChange={handleVideoSourceChange}
           />
-          <img id="video-player" src={selectedSource} alt="Video" />
           <div style={{ width: '100', display: 'flex', justifyContent: 'center' }}>
           </div>
         </div>
       </div>
       <div className='home-container__body'>
         <Decibels/>
-        <Tracker/> 
+        <Tracker selectedSource={selectedSource}/> 
       </div>
       
     </div>

@@ -3,3 +3,4 @@ export * from "./auth";
 export * from "./measurement";
 export * from "./alert";
 export * from "./image";
+export * from "./worker";

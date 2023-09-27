@@ -2,12 +2,12 @@ import { initializeApp } from "firebase/app";
 import { getFirestore } from "firebase/firestore";
 
 const firebaseConfig = {
-  apiKey: "AIzaSyA3U9pg6q_YOzBEVEv_zISPycpixH7g364",
-  authDomain: "noisetrack-87d3d.firebaseapp.com",
-  projectId: "noisetrack-87d3d",
-  storageBucket: "noisetrack-87d3d.appspot.com",
-  messagingSenderId: "491811791055",
-  appId: "1:491811791055:web:88cf42f3bcd9370e6497ba"
+  apiKey: "AIzaSyBesdfp03MkMH6B9XojT0JL-JFZ55XP-98",
+  authDomain: "noisetrack2.firebaseapp.com",
+  projectId: "noisetrack2",
+  storageBucket: "noisetrack2.appspot.com",
+  messagingSenderId: "982912369967",
+  appId: "1:982912369967:web:65cfd73592952dcb430dda"
 };
 
 export const initFirebase = initializeApp(firebaseConfig);

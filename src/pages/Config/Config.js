@@ -1,9 +1,16 @@
-import React from 'react'
+import React from 'react';
+import "./Config.scss";
+
+import { Configuration } from "../../components/Config"
 
 export function Config() {
+
   return (
-    <div>
-      <h1>Config Screen</h1>
+    <div className='config-container'>
+      <h1 className='config-container__title'>Panel de configuaciones</h1>
+      <div className='config-container__body'>
+        <Configuration/>
+      </div>
     </div>
   )
 }

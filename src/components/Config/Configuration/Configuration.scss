@@ -1,0 +1,91 @@
+@import "~/src/scss/index";
+
+.configuration-container {
+
+    &__title{
+
+    }
+
+    &__worker {
+
+    }
+
+    .ui.selection.dropdown {
+        background-color: $primary-color-hover;
+        border-color: $primary-color-hover !important;
+        .text{
+            color: $font-light !important;
+        }
+
+        .item{
+            background-color: $primary-color-hover;
+        }
+
+        i {
+            color: $font-light !important;
+        }
+
+        &.active {
+            .item{
+                background-color: $primary-color-hover;
+            }
+
+            :hover,
+            .menu,
+            :focus{
+                background-color: $primary-color-hover !important;
+                border-color: $font-light !important;
+            }
+        }
+        
+    }
+
+    .info {
+        font-size: 17px;
+    }
+
+    .icon {
+        margin-right: 0.5rem;
+        font-size: 15px;
+    }
+
+    .worker-add {
+        display: flex;
+        align-items: center;
+        margin-bottom: 1.5rem;
+        margin-left: 0.5rem;
+    }
+
+    .cam-update {
+        display: flex;
+        align-items: center;
+        margin-bottom: 1.5rem;
+        margin-left: 0.5rem;
+    }
+
+    .form-add-worker {
+        text-align: right;
+
+    }
+
+    .ui.button.worker {
+        
+    }
+
+    .ui.form {
+        .field {
+            .button {
+                margin-bottom: 10px !important;
+                margin-top: 15px !important;
+                border-radius: 10px !important;
+                padding: 13px 0 !important;
+                font-size: 15px !important;
+                background-color: $primary-color-hover !important;
+                color: $font-light !important;
+                width: 20% !important;
+            }
+        }
+    }
+
+    
+}

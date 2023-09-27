@@ -31,11 +31,4 @@ export class Alerts{
             throw error
         }
     }
-
-    async getAlertToday(start){
-        const docRef = collection(bd, this.collectionName);
-        const q = query(docRef, where("created", ">=", start))
-        const snapshot = await getDocs(q);
-        return snapshot.data();
-    }
 }
