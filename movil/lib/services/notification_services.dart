@@ -1,4 +1,5 @@
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
     FlutterLocalNotificationsPlugin();
@@ -28,6 +29,23 @@ Future<void> showNotification() async {
     android: androidNotificationDetails,
   );
 
-  await flutterLocalNotificationsPlugin.show(1, 'Alerta', '5 personas expuestas por 9 [s] a 90 [db] en sala 3', notificationDetails);
+  FirebaseFirestore db = FirebaseFirestore.instance;
+  db.collection('alerts').snapshots().listen((event) {
+  for (var change in event.docChanges) {
+    switch (change.type) {
+      default:
+        Map<String, dynamic> data =change.doc.data()!;
+        var workers = data['workers'].toString();
+        var time = data['time'].toString();
+        var decibels = data['db'].toString();
+        var place = data['place'];
+        flutterLocalNotificationsPlugin.show(1, 'Alerta', '$workers personas expuestas por $time [s] a $decibels [db] en $place', notificationDetails);;
+        break;
+    }
+  }
+});
+
+
+ 
 
 }
