@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_login/flutter_login.dart';
 import 'package:noisetrack/home.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:noisetrack/services/firebase_auth_services.dart';
 
 class LoginPage extends StatefulWidget{
   const LoginPage({Key? key}) : super(key: key);
@@ -10,7 +11,18 @@ class LoginPage extends StatefulWidget{
 }
 
 class _LoginPageState extends State<LoginPage>{
+ final FirebaseAuthService _auth = FirebaseAuthService();
+  TextEditingController _emailController = TextEditingController();
+  TextEditingController _passwordController = TextEditingController();
+
   @override
+  //State<LoginPage> createState() => _LoginPageState();
+  void dispose(){
+    _emailController.dispose();
+    _passwordController.dispose();
+    super.dispose();
+  }
+
   Widget build(BuildContext context){
     return Scaffold(
       backgroundColor: Colors.black12,
@@ -30,10 +42,11 @@ class _LoginPageState extends State<LoginPage>{
                 border: Border.all(color: Colors.white),
                 borderRadius: BorderRadius.circular(12),
               ),
-              child: const Padding(
-                padding: EdgeInsets.only(left: 20.0),
+              child: Padding(
+                padding: const EdgeInsets.only(left: 20.0),
                 child: TextField(
-                  decoration: InputDecoration(
+                  controller: _emailController,
+                  decoration: const InputDecoration(
                     border: InputBorder.none,
                     hintText: 'Email',
                   ),
@@ -49,11 +62,12 @@ class _LoginPageState extends State<LoginPage>{
                 border: Border.all(color: Colors.white),
                 borderRadius: BorderRadius.circular(12),
               ),
-              child: const Padding(
-                padding: EdgeInsets.only(left: 20.0),
+              child: Padding(
+                padding: const EdgeInsets.only(left: 20.0),
                 child: TextField(
+                  controller: _passwordController,
                   obscureText: true,
-                  decoration: InputDecoration(
+                  decoration: const InputDecoration(
                     border: InputBorder.none,
                     hintText: 'Password',
                   ),
@@ -83,12 +97,7 @@ class _LoginPageState extends State<LoginPage>{
                 ),
               ),
             ),
-            onTap: (){
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => const MyHomePage(title: 'NoiseTrack')),
-              );
-            },
+            onTap: _signIn,
             ),
           ),
           const SizedBox(height: 10),
@@ -96,5 +105,20 @@ class _LoginPageState extends State<LoginPage>{
         ],
       ),
     );
+  }
+  
+  void _signIn() async{
+    String email = _emailController.text;
+    String password = _passwordController.text;
+    
+    User? user = await _auth.signInWithEmailAndPassword(email, password);
+    
+    if(user!= null){
+      print("User is succesfully signedIn");
+      Navigator.push(
+        context,
+        MaterialPageRoute(builder: (context) => const MyHomePage(title: 'NoiseTrack')),
+      );
+    }
   }
 }
