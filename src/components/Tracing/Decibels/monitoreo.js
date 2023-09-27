@@ -3,10 +3,13 @@ import React, { useState, useEffect } from 'react';
 //import { saveRequest } from "../../api/decibel";
 //import cloneDeep from 'lodash.clonedeep';
 import { Button } from "semantic-ui-react";
-import { bd } from "../../../config";
+import { db } from "../../config/firebase";
 import { collection, addDoc } from "firebase/firestore";
 import { doc, setDoc } from "firebase/firestore";
 import { v4 as uuid } from 'uuid';
+import {micro} from "../../pages/Home/Home"
+
+
 
 import io from 'socket.io-client';
 
@@ -104,9 +107,7 @@ function cargarValores() {
 }
 cargarValores()
 
-export function Decibels(props) {
-
-  const {micro} = props;
+export function Chart() {
 
 
   let value;
@@ -471,7 +472,7 @@ export function Decibels(props) {
           place: 'Galpon 1',
           camara: 1
         };
-        await setDoc(doc(bd, "decibeles", uuid()), dataf);
+        await setDoc(doc(db, "decibeles", uuid()), dataf);
       }
       if (data2[data2.length - 1].value[1] > 55) {
         let dataf = {
@@ -480,7 +481,7 @@ export function Decibels(props) {
           place: 'Galpon 2',
           camara: 2
         };
-        await setDoc(doc(bd, "decibeles", uuid()), dataf);
+        await setDoc(doc(db, "decibeles", uuid()), dataf);
       }
 
 
@@ -600,6 +601,5 @@ export function Decibels(props) {
     </div>
   );
 }
-
 
 

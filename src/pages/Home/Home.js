@@ -9,11 +9,19 @@ const videoSources = [
   { key: 'video2', text: 'Video 2', value: 'http://localhost:8001/video' },
 ];
 
+let micro = 1
+
 export function Home() {
 
   const [selectedSource, setSelectedSource] = useState(videoSources[0].value);
 
   const handleVideoSourceChange = (event, { value }) => {
+    console.log("aaaa")
+    if(value === 'http://localhost:8000/video'){
+      micro = 1;
+    }else if(value === 'http://localhost:8001/video'){
+      micro = 2;
+    }
     setSelectedSource(value);
   };
 
@@ -34,7 +42,7 @@ export function Home() {
         </div>
       </div>
       <div className='home-container__body'>
-        <Decibels/>
+        <Decibels micro={micro}/>
         <Tracker selectedSource={selectedSource}/> 
       </div>
       
