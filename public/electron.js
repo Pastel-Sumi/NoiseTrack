@@ -2,12 +2,9 @@ const electron = require("electron");
 const app = electron.app;
 const BrowserWindow = electron.BrowserWindow; //Ventana aplicaci+on
 const ipcMain = electron.ipcMain;
-
 const path = require("path");
 const isDev = require("electron-is-dev");
 
-//Conexión mongoDB
-require("../src/config/mongodb");
 
 let mainWindow;
 
@@ -20,6 +17,7 @@ function createWindow() {
       nodeIntegration: true,
       contextIsolation: false,
     }
+    
     // titleBarStyle: "hiddenInset",
     // resizable: false,
   });
@@ -51,3 +49,5 @@ app.on("activate", () => {
 ipcMain.on('test', (e,args) => {
   console.log(args)
 })
+
+

@@ -1,24 +1,45 @@
-import React from 'react'
-import { Button } from "semantic-ui-react";
+import React, { useState } from 'react'
+import { Select } from "semantic-ui-react";
+import "./Home.scss";
 
-import { Measurement } from "../../api";
+import { Tracker, Decibels } from "../../components/Tracing";
 
-const measurement = new Measurement();
+const videoSources = [
+  { key: 'video1', text: 'Video 1', value: 'http://localhost:8000/video' },
+  { key: 'video2', text: 'Video 2', value: 'http://localhost:8001/video' },
+];
 
 export function Home() {
 
-  const handleMeasurement = async () => {
-    try{
-      await measurement.getDecibels();
-    }catch(error){
-      console.error(error);
-    }
-  }
+  const [selectedSource, setSelectedSource] = useState(videoSources[0].value);
+
+  const handleVideoSourceChange = (event, { value }) => {
+    setSelectedSource(value);
+  };
 
   return (
-    <div>
-      <h1>Home Screen</h1>
-      <Button primary onClick={handleMeasurement}>Decibeles</Button>
+    <div className='home-container'>
+      <h1 className='home-container__title'>Seguimiento área de trabajo</h1>
+      <div className='home-container__selector'>
+        <div className='selector'>
+          <p className='label-selector'>Seleccione un área de trabajo:</p>
+          <Select
+            id="video-source"
+            options={videoSources}
+            value={selectedSource}
+            onChange={handleVideoSourceChange}
+          />
+          <img id="video-player" src={selectedSource} alt="Video" />
+          <div style={{ width: '100', display: 'flex', justifyContent: 'center' }}>
+          </div>
+        </div>
+      </div>
+      <div className='home-container__body'>
+        <Decibels/>
+        <Tracker/> 
+      </div>
+      
     </div>
+
   )
 }

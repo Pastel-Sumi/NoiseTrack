@@ -6,16 +6,7 @@ $topBarHeight: calc(20vh - 5rem);
 .logged-layout{
     height: 100vh;
     background-color: $background-primary;
-
-    .translate-x-0{
-        transform: translate(0px); 
-        transition: 1s;
-    }
-
-    .translate-x-220 {
-        transform: translate(-220px);
-        transition: 1s;
-    }
+    overflow: hidden;
 
     &__content {
         height: 100%;
@@ -32,9 +23,15 @@ $topBarHeight: calc(20vh - 5rem);
         background-color: $primary-color;
     }
 
+    &__menu-children {
+        height: 100%;
+        justify-content: space-around;
+    }
+
     &__left-menu { 
         float: left;
         padding: 0.5rem;
+        display: block;
         background-color: $primary-color;
         height: calc(100% - $topBarHeight);
         width: $menuWight;
@@ -42,21 +39,8 @@ $topBarHeight: calc(20vh - 5rem);
     }
 
     &__children-content {
-        float: left;
+        float: right;
         width: calc(100% - $menuWight);
-        &::-webkit-scrollbar{
-            display: none;
-        }
-
-        &__translate-children-x-0{
-            transition: 1s;
-            width: calc(100% - $menuWight);
-        }
-    
-        &__translate-children-x-220 {
-            transform: translate(-$menuWight);
-            transition: 1s;
-            width: 100%;
-        }
+        margin: 0;
     }
 }

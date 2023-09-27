@@ -1,0 +1,60 @@
+@import "~/src/scss/index";
+
+.home-container {
+    justify-content: center;
+    margin: 1.5rem;
+
+    .ui.selection.dropdown {
+        background-color: $primary-color-hover;
+        border-color: $primary-color-hover !important;
+        .text{
+            color: $font-light !important;
+        }
+
+        .item{
+            background-color: $primary-color-hover;
+        }
+
+        i {
+            color: $font-light !important;
+        }
+
+        &.active {
+            .item{
+                background-color: $primary-color-hover;
+            }
+
+            :hover,
+            .menu,
+            :focus{
+                background-color: $primary-color-hover !important;
+                border-color: $font-light !important;
+            }
+        }
+        
+    }
+
+    .selector {
+        display: flex;
+        align-items: center;
+        justify-content: start;
+    }
+
+    .label-selector {
+        font-size: 15px;
+        margin-bottom: 0.5rem;
+        margin-right: 1rem;
+    }
+
+    &__title {
+        text-align:center;
+        font-size: 40px;
+        margin: 1.5rem;
+    }
+
+    &__body {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+    }
+}

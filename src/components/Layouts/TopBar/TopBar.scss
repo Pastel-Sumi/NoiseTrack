@@ -12,8 +12,19 @@
         cursor: pointer; 
     }
 
+    .info {
+        cursor: pointer;
+        align-items: center;
+        display: flex;
+    }
+
     .typo { 
         font-size: 30px;
+    }
+
+    .ui.button {
+        background-color: $primary-color !important;
+        padding: 0 !important;
     }
 
     .logout,
@@ -31,6 +42,14 @@
 
     .icon {
         font-size: 1.5rem !important;
+    }
+
+    .icon-bell {
+        font-size: 1.5rem !important;
+    }
+
+    .num-alert {
+        margin-right: 1.5rem;
     }
 
     &__menu {

@@ -19,17 +19,19 @@ export function LoggedLayout(props) {
     <div className="logged-layout">
       <div className='logged-layout__content'>
           <div className='logged-layout__top-bar'>
-            <Icon className='top-bar__menu' name="content" onClick={handleHiddenMenu}/>
             <TopBar/>
           </div>
 
-          <div className={`${show ? 'translate-x-0' : 'translate-x-220'} logged-layout__left-menu`}>
-            <LeftMenu/>
-          </div> 
+          <div className='logged-layout__menu-children'>
+            <div className='logged-layout__left-menu'>
+              <LeftMenu/>
+            </div> 
 
-          <div className={`logged-layout__children-content${show ? '__translate-children-x-0' : '__translate-children-x-220'} `}>
-            <div>{children}</div>
+            <div className='logged-layout__children-content'>
+              <div>{children}</div>
+            </div>
           </div>
+          
 
       </div>
     </div>

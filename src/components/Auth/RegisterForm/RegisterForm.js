@@ -3,10 +3,11 @@ import { Form, Icon } from "semantic-ui-react";
 import { useFormik } from "formik"
 
 import { initialValues, validationSchema } from './RegisterForm.data';
-import { Auth } from "../../../api";
+import { Auth, User } from "../../../api";
 import "./RegisterForm.scss"
 
 const auth = new Auth();
+const user = new User();
 
 export function RegisterForm(props) {
 
@@ -21,6 +22,7 @@ export function RegisterForm(props) {
     onSubmit: async (formValue) => {
       try{
         await auth.register(formValue.email, formValue.password)
+        await user.updateDisplayName(formValue.username)
       }catch(error){
         console.error(error);
       }

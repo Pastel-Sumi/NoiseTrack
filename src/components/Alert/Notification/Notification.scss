@@ -1,0 +1,85 @@
+@import "~/src/scss/index";
+
+.alerts {
+    height: 80vh;
+    overflow-x: hidden;
+    overflow-y:scroll;    
+}
+
+.danger1{
+    background-color: $danger1;
+}
+
+.danger2{
+    background-color: $danger2;
+}
+
+.alert {
+    margin-left: 2rem !important;
+    margin-right: 2rem !important;
+    margin-bottom: 1.5rem !important;
+    padding: 0.5rem;
+    
+    border-radius: 10px;
+
+    &__container {
+        display: flex;
+        align-items: center;
+        margin-left: 1.5rem;
+        justify-content: space-between;
+    }
+
+    &__container-title {
+        margin-top: 1.5rem !important;
+        margin-left: 1.5rem;
+        margin-bottom: 0;
+        font-size: 25px;
+    }
+
+    &__container-title-sub {
+        margin-left: 3rem;
+        margin-bottom: 1rem;
+        margin-top: 0.5rem;
+        font-size: 20px;
+    }
+
+    &__container-body{
+        display: flex;
+        align-items: center;
+        padding-bottom: 1.5rem;
+    }
+
+    &__container-body-info{
+        width: 100%;
+        padding: 0.5rem;
+    }
+
+    .alert-info{
+        display: flex;
+        align-items: center;
+        margin-bottom: 0.5rem;
+        margin-left: 0.5rem;
+    }
+
+    .icon {
+        margin-right: 0.5rem;
+        font-size: 15px;
+    }
+
+    .icon-alert {
+        font-size: 50px;
+        margin-right: 2rem;
+    }
+
+    .info {
+        margin-left: 0.5rem;
+        font-size: 15px;
+    }
+
+    .image{
+        height: 250px;
+        padding-left: 1.5rem;
+        padding-right: 1.5rem;
+        padding-bottom: 1.5rem;
+    }
+}

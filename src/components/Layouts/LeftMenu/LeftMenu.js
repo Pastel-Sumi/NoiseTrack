@@ -1,12 +1,19 @@
 import React, { useState } from 'react';
 import { Link, useLocation } from "react-router-dom";
 import { Menu, Accordion, Icon } from "semantic-ui-react"
+import { User } from "../../../api"
 import "./LeftMenu.scss";
+
+const user = new User();
 
 export function LeftMenu() {
 
   const [activeIndex, setActiveIndex] = useState(0)
   const {pathname} = useLocation();
+  const userData = user.getMe();
+
+  const displayName = userData.displayName || "Mi cuenta";
+  const email = userData.email || "Correo electronico";
 
   const handleShowMenu = (e, titleProps) => {
     const { index } = titleProps
@@ -16,8 +23,6 @@ export function LeftMenu() {
   }
 
   const isCurrentPage = (route) => {
-    console.log("---------------")
-    console.log(route)
     return route === pathname
   }
 
@@ -70,13 +75,12 @@ export function LeftMenu() {
 
       <div className='left-menu__user'>
         <div className='left-menu__avatar'>
-          N
+          {displayName.charAt(0).toLowerCase()}
         </div>
 
         <div className='left-menu__user-info'>
-            <p>Nombre usuario</p>
-            <p>Nombre empresa</p>
-            <p>Email</p>
+            <p>{displayName}</p>
+            <p>{email}</p>
         </div>
       
       </div>

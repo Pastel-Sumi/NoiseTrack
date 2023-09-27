@@ -1,0 +1,11 @@
+@import "~/src/scss/index";
+
+.alert-container {
+    justify-content: center;
+
+    &__title {
+        text-align:center;
+        font-size: 40px;
+        margin: 1.5rem;
+    }
+}
