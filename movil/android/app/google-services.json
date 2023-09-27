@@ -1,13 +1,13 @@
 {
   "project_info": {
-    "project_number": "491811791055",
-    "project_id": "noisetrack-87d3d",
-    "storage_bucket": "noisetrack-87d3d.appspot.com"
+    "project_number": "982912369967",
+    "project_id": "noisetrack2",
+    "storage_bucket": "noisetrack2.appspot.com"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:491811791055:android:b23638d77aad37156497ba",
+        "mobilesdk_app_id": "1:982912369967:android:aa50a802f2ac4f15430dda",
         "android_client_info": {
           "package_name": "com.example.noisetrack"
         }
@@ -15,7 +15,7 @@
       "oauth_client": [],
       "api_key": [
         {
-          "current_key": "AIzaSyDe4_Dlf4sXCI_vybPNjDPqCwxWs1OMmRw"
+          "current_key": "AIzaSyDqlB3ngIOF7zg5JRRlutM7ppYoOWinsGA"
         }
       ],
       "services": {
