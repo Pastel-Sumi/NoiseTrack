@@ -6,10 +6,11 @@ Future<List> getNotifications() async {
   List notifications = [];
   CollectionReference collectionReferenceNotification = db.collection('alerts');
 
-  QuerySnapshot queryNotifications = await collectionReferenceNotification.get();
+  //Query realizada para la base de datos
+  QuerySnapshot queryNotifications =  await collectionReferenceNotification.get();
 
   queryNotifications.docs.forEach((document) {
-    notifications.add(document);
+    notifications.add(document.data());
    });
 
   return notifications;
