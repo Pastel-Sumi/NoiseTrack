@@ -7,13 +7,14 @@ import { bd } from "../../../config";
 import { collection, addDoc } from "firebase/firestore";
 import { doc, setDoc } from "firebase/firestore";
 import { v4 as uuid } from 'uuid';
+import { micro } from "../../../pages/Home/Home"
 
 import io from 'socket.io-client';
 
 
 
 
-
+let new_flag = true;
 let flag = true;
 let datos = 1;
 let algo;
@@ -46,6 +47,7 @@ let decibel = {};
 
 const socket = io('http://localhost:6001');
 //const socket2 = io('http://localhost:6002');
+
 
 function enviarDecibel(decibeles){
   socket.emit('message',decibeles);
@@ -104,10 +106,7 @@ function cargarValores() {
 }
 cargarValores()
 
-export function Decibels(props) {
-
-  const {micro} = props;
-
+export function Decibels() {
 
   let value;
   const [localDbValues, setLocalDbValues] = useState([]);
@@ -206,7 +205,7 @@ export function Decibels(props) {
     if (version === 1) {
       if (!isAudioInitialized) {
 
-        navigator.mediaDevices.getUserMedia({ audio: { deviceId: '4cc622597fcd1c520f112fb6bde630ffbfe4a65f02149ad36ea5b97cdbfaa6dd' }, video: false })
+        navigator.mediaDevices.getUserMedia({ audio: { deviceId: '96e8f94d0710d3e783c1187bc9fc1cf819f8bab8c86f3962da6f02ed517208d3' }, video: false })
           .then((stream) => {
             audioStream = stream;
             startAudioProcessing(audioStream, version);
@@ -218,7 +217,7 @@ export function Decibels(props) {
       }
     } else if (version === 2) {
       if (!isAudioInitialized2) {
-        navigator.mediaDevices.getUserMedia({ audio: { deviceId: 'ba2f87907eb1bc1b0d70aace5d9b4d5e1f4ab78c49f12c8cb8c4def46d1ef914' }, video: false })
+        navigator.mediaDevices.getUserMedia({ audio: { deviceId: '16054751c3722357e5534bdaa7a96b1c7fb4680aa9039e607cc878c4c3e7b19b' }, video: false })
           .then((stream) => {
             audioStream2 = stream;
             startAudioProcessing(audioStream2, version);
@@ -292,9 +291,9 @@ export function Decibels(props) {
   }
   function microfono_selec(datos) {
     if (datos === 1) {
-      return audioInputDevices['4cc622597fcd1c520f112fb6bde630ffbfe4a65f02149ad36ea5b97cdbfaa6dd'];
+      return audioInputDevices['96e8f94d0710d3e783c1187bc9fc1cf819f8bab8c86f3962da6f02ed517208d3'];
     } else if (datos === 2) {
-      return audioInputDevices['ba2f87907eb1bc1b0d70aace5d9b4d5e1f4ab78c49f12c8cb8c4def46d1ef914'];
+      return audioInputDevices['16054751c3722357e5534bdaa7a96b1c7fb4680aa9039e607cc878c4c3e7b19b'];
     }
   }
 
@@ -318,7 +317,18 @@ export function Decibels(props) {
     initializeAudio(1);
     initializeAudio(2);
     //saveDecibel();
-    ejecutarIntervalo();
+    
+    if (new_flag) {
+      ejecutarIntervalo();
+      new_flag = false;
+    } else{
+      ejecutarIntervalo();
+    }
+
+    // Limpiar el intervalo al desmontar el componente
+    return () => {
+      clearInterval(intervalId);
+    };
   }, []);
 
 
@@ -371,7 +381,7 @@ export function Decibels(props) {
 
   // const [option, setOption] = useState(DEFAULT_OPTION);
 
-  function actualizarAviso() {
+  /* function actualizarAviso() {
     const avisoElement = document.getElementById('aviso');
     const conteo = contarValoresMayoresA20(v_datos(datos));
 
@@ -390,29 +400,31 @@ export function Decibels(props) {
     } else {
       // Ocultar el aviso si el conteo es menor o igual a 60
       avisoElement.style.display = 'none';
-    }
+    } */
 
     // Ocultar el aviso si el conteo es menor o igual a 60
-    if (conteo <= intervaloTiempoPrecaucion) {
+    /* if (conteo <= intervaloTiempoPrecaucion) {
       avisoElement.style.display = 'none';
     } else {
       avisoElement.style.display = 'block';
     }
-  }
+  } */
 
 
 
 
   function ejecutarIntervalo() {
-
+    if (intervalId) {
+      clearInterval(intervalId);
+    }
 
     intervalId = setInterval(async function () {
       let date = new Date();
       micro_seleccionado = microfono_selec(micro);
-      console.log("entro")
       const microfono_nombre = document.getElementById('micro');
-      microfono_nombre.textContent = micro_seleccionado.label;
-      console.log(micro_seleccionado.label)
+      if (micro_seleccionado && micro_seleccionado.label !== undefined && microfono_nombre !== null) {
+        microfono_nombre.textContent = micro_seleccionado.label;
+      }
       superData.shift(); // Eliminar el dato más antiguo
       now2 = (now2 + 1000);
       superData.push(randomData(1)); // Agregar un nuevo dato
@@ -434,9 +446,13 @@ export function Decibels(props) {
       const numero = 42; // El número que deseas enviar
       let okp = data[data.length - 1].value[1];
       let okp2 = data2[data2.length - 1].value[1];
-
-      enviarDecibel("1 "+okp);
-      enviarDecibel("2 "+okp2);
+      try {
+        enviarDecibel("1 "+okp);
+        enviarDecibel("2 "+okp2);
+      } catch (error) {
+        throw error
+      }
+      
 
 
 
@@ -497,7 +513,7 @@ export function Decibels(props) {
         console.log(error.response);
       }*/
 
-      actualizarAviso();
+      //actualizarAviso();
       //console.log(data);
       //updateElapsedTime();
 
@@ -575,9 +591,6 @@ export function Decibels(props) {
   return (
 
     <div>
-      <div id="aviso" className="flex justify-center aviso amarillo">Aviso</div>
-
-
       {showChart && (
         <ReactEcharts
           option={option}
@@ -586,7 +599,6 @@ export function Decibels(props) {
       )}
 
       <div className="flex justify-center items-center">
-        <Button onClick={changeMicro}> Cambiar Micro</Button>
         <Button onClick={toggleRangoButton_5M}> 5 Minutos</Button>
         <Button onClick={toggleRangoButton_30M}> 30 Minutos</Button>
         <Button onClick={toggleRangoButton_1H}> 1 Hora</Button>

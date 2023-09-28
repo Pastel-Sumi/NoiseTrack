@@ -9,7 +9,7 @@ const videoSources = [
   { key: 'video2', text: 'Video 2', value: 'http://localhost:8001/video' },
 ];
 
-let micro = 1
+export let micro = 1
 
 export function Home() {
 
@@ -42,7 +42,7 @@ export function Home() {
         </div>
       </div>
       <div className='home-container__body'>
-        <Decibels micro={micro}/>
+        <Decibels/>
         <Tracker selectedSource={selectedSource}/> 
       </div>
       

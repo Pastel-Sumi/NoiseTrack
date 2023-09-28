@@ -23,7 +23,7 @@ import firebase_admin
 from firebase_admin import credentials
 from firebase_admin import firestore
 import uuid
-cred = credentials.Certificate("noisetrack2-firebase-adminsdk-9jtjm-df8b88271f.json")
+cred = credentials.Certificate("noisetrack3-firebase-adminsdk-8d5io-77d82c21f0.json")
 firebase_admin.initialize_app(cred)
 
 
@@ -96,7 +96,7 @@ db_time_test = {
     39: 420,
     40: 330,
     41: 270,
-    42: 210,
+    42: 20,
     43: 150,
     44: 120,
     45: 900,
@@ -216,11 +216,14 @@ db_time_test = {
 def handler_message(sio, data):
     global current_db, current_db2, current_db2_epp, current_db_epp
     if(data[0]=='1'):
-        current_db = round(float(data[2:]))
-        current_db_epp = current_db - 10
+        pass
+        #current_db = round(float(data[2:]))
+        #current_db_epp = current_db - 10
     elif(data[0]=='2'):
-        current_db2 = round(float(data[2:]))
-        current_db2_epp = current_db2 - 10
+        #current_db2 = round(float(data[2:]))
+        #current_db2_epp = current_db2 - 10
+        pass
+    
     
     
 
@@ -239,7 +242,7 @@ class VideoStreamHandler(BaseHTTPRequestHandler):
                     frame_data = b'--frame\r\nContent-Type: image/jpeg\r\n\r\n' + buffer.tobytes() + b'\r\n'
                     self.wfile.write(frame_data)
             except Exception as e:
-                print(f"Error: {e}")
+                #print(f"Error: {e}")
                 pass
             return
         else:
@@ -306,9 +309,9 @@ def camera_process(source_name, source):
 
     box_annotator = sv.BoxAnnotator(
         color=color_palette,
-        thickness=2,
+        thickness=3,
         text_thickness=1,
-        text_scale=0.5
+        text_scale=1
     )
 
     model = YOLO("yolov8m_custom.pt")
@@ -318,7 +321,7 @@ def camera_process(source_name, source):
     aux_db = 0
     date_time = datetime.now().strftime("%m-%d-%Y, %H:%M:%S")
     created = datetime.now()
-    for result in model.track(source, show=False, stream=True, agnostic_nms=True, verbose=False,show_conf=False, conf=0.7, save=False, classes=[1,2]):
+    for result in model.track(source, show=False, stream=True, persist=True, agnostic_nms=True, verbose=False,show_conf=False, conf=0.7, save=False, classes=[1,2]):
         
         frame = result.orig_img
         detections = sv.Detections.from_ultralytics(result)
@@ -379,24 +382,32 @@ def camera_process(source_name, source):
                                         'place': place,
                                         'type': 1,
                                         }
-                                #insert_to_db(data)
+                                
                                 info_text = f"Lugar: {data['place']}\n"
                                 info_text += f"Tiempo de exposicion: {data['time']} segundos\n"
                                 info_text += f"Decibel expuesto: {data['db']}\n"
                                 info_text += f"Fecha y hora: {data['date']}\n"
                                 info_text += f"Cantidad de personas expuestas: {data['workers']} personas\n"
                                 notification_text = f"Tipo de Alerta: {data['type']}\n" + info_text 
-                                #send_notification(notification_text)
+
                                 font = cv2.FONT_HERSHEY_PLAIN
                                 font_scale = 1
-                                font_color = (255, 128, 0) # Naranjo
+                                font_color = (255, 128, 0)  # Naranjo
                                 thickness = 1
-                                text_size = cv2.getTextSize(notification_text, font, font_scale, thickness)[0]
+
+                                # Separar el texto en líneas
+                                lines = notification_text.split('\n')
+
                                 text_x = 10
-                                text_y = text_size[1] + 10
-                                # Agregar el texto a la imagen
-                                cv2.putText(result.orig_img, notification_text, (text_x, text_y), font, font_scale, font_color, thickness)
-                
+                                text_y = 10  # Comenzar desde arriba
+
+                                # Agregar cada línea del texto a la imagen
+                                for line in lines:
+                                    text_size = cv2.getTextSize(line, font, font_scale, thickness)[0]
+                                    cv2.putText(result.orig_img, line, (text_x, text_y), font, font_scale, font_color, thickness)
+                                    text_y += text_size[1] + 5  # Espacio entre líneas
+                                
+
                                 save_image_and_insert_to_db(result.orig_img, data)
                         
                         if duration.seconds > db_time_test[aux_db] and tracker_id not in trackers_exceeded_limit:
@@ -412,7 +423,6 @@ def camera_process(source_name, source):
                                     'place': place,
                                     'type': 2,
                                     }
-                            #insert_to_db(data)
                             info_text = f"Lugar: {data['place']}\n"
                             info_text += f"Tiempo de exposicion: {data['time']} segundos\n"
                             info_text += f"Decibel expuesto: {data['db']}\n"
@@ -422,14 +432,22 @@ def camera_process(source_name, source):
                             #send_notification(notification_text)
                             font = cv2.FONT_HERSHEY_PLAIN
                             font_scale = 1
-                            font_color = (255, 128, 0) # Naranjo
+                            font_color = (255, 128, 0)  # Naranjo
                             thickness = 1
-                            text_size = cv2.getTextSize(notification_text, font, font_scale, thickness)[0]
+
+                            # Separar el texto en líneas
+                            lines = notification_text.split('\n')
+
                             text_x = 10
-                            text_y = text_size[1] + 10
-                            # Agregar el texto a la imagen
-                            cv2.putText(result.orig_img, notification_text, (text_x, text_y), font, font_scale, font_color, thickness)
-            
+                            text_y = 10  # Comenzar desde arriba
+
+                            # Agregar cada línea del texto a la imagen
+                            for line in lines:
+                                text_size = cv2.getTextSize(line, font, font_scale, thickness)[0]
+                                cv2.putText(result.orig_img, line, (text_x, text_y), font, font_scale, font_color, thickness)
+                                text_y += text_size[1] + 5  # Espacio entre líneas
+                            
+                            
                             save_image_and_insert_to_db(result.orig_img, data)
             # Reset start times when current_db drops below 15
             elif aux_db < 15:
@@ -445,7 +463,7 @@ def camera_process(source_name, source):
             detections=detections,
             labels=labels
         )
-        re_frame = cv2.resize(frame, (520, 480))
+        re_frame = cv2.resize(frame, (1280, 720))
         if source_name == "Camera 1":
             socket_frame_1 = re_frame
         elif source_name == "Camera 2":
@@ -465,8 +483,9 @@ def camera_process(source_name, source):
 
 
 def main():
-    camera_source_1 = "rtsp://camara1:xHNRY7@192.168.43.189:88/videoMain"
-    camera_source_2 = "rtsp://camara2:xHNRY7@192.168.43.182:88/videoMain"
+    camera_source_1 = "rtsp://sumisumi:esteban535@192.168.137.33:88/videoMain"
+    camera_source_2 = 0
+    #camera_source_2 = "rtsp://sumisumi:esteban535@192.168.137.107:88/videoMain"
     camera1_thread = threading.Thread(target=camera_process, args=("Camera 1", camera_source_1))
     camera2_thread = threading.Thread(target=camera_process, args=("Camera 2", camera_source_2))
 
