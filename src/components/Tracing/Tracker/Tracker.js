@@ -7,7 +7,6 @@ export function Tracker(props) {
   console.log(selectedSource);
   return (
     <div className='tracker'>
-      <h1>Video tracker</h1>
       <Image id="video-player" src={selectedSource} alt="Video" />
     </div>
   )

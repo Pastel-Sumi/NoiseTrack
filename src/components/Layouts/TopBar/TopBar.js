@@ -39,7 +39,6 @@ export function TopBar() {
     const unsuscribe = await onSnapshot(query, (doc) => {
       if(alerts.length === 0){
         for(let i=0; i < doc.docs.length; i++){
-          console.log("aaa")
           alerts.push(doc.docs[i].id)
         }
       }else{

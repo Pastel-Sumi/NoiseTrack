@@ -4,3 +4,5 @@ export * from "./measurement";
 export * from "./alert";
 export * from "./image";
 export * from "./worker";
+export * from "./workplace";
+export * from "./camera";

@@ -1,0 +1,22 @@
+@import "~/src/scss/index";
+
+.userList-container {
+    margin-bottom: 1.5rem;
+    
+
+    .ui.table {
+        background-color: $primary-color-hover;
+        text-align: center !important;
+
+            th{
+                background-color: $primary-color-hover;
+                color: $font-light;
+                border-color: $font-light !important;
+            }
+
+            td{
+                border-color: $font-light !important;
+            }
+
+    }
+}

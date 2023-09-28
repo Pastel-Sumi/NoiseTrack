@@ -1,10 +1,46 @@
 @import "~/src/scss/index";
 
-.configuration-container {
-    
+.label {
+    background-color: $font-grey !important;
+    margin-bottom: 0.5rem !important;
+    color: $font-dark !important;
+}
+
+.camera-container {
+
+    .header{
+        background-color: $primary-color-hover;
+    }
+
+    .modal-button{
+        color: $primary-color-hover !important;
+    }
+
+    .ui.form {
+        .field {
+            .button {
+                margin-bottom: 10px !important;
+                border-radius: 10px !important;
+                padding: 13px 0 !important;
+                font-size: 15px !important;
+                background-color: $primary-color-hover !important;
+                color: $font-light !important;
+                width: 20% !important;
+            }
+        }
+    }
+  
+    .form_content {
+        display: flex;
+        align-items: center;
+        margin-bottom: 1.5rem;
+        margin-left: 0.5rem;
+    }
     .ui.selection.dropdown {
         background-color: $primary-color-hover;
         border-color: $primary-color-hover !important;
+        width: 20% !important;
+
         .text{
             color: $font-light !important;
         }
@@ -41,13 +77,6 @@
         font-size: 15px;
     }
 
-    .worker-add {
-        display: flex;
-        align-items: center;
-        margin-bottom: 1.5rem;
-        margin-left: 0.5rem;
-    }
-
     .cam-update {
         display: flex;
         align-items: center;
@@ -55,16 +84,15 @@
         margin-left: 0.5rem;
     }
 
-    .form-add-worker {
+    .form-update-worker {
         text-align: right;
 
     }
 
     .ui.form {
-        .field {
+        .field {        
             .button {
                 margin-bottom: 10px !important;
-                margin-top: 15px !important;
                 border-radius: 10px !important;
                 padding: 13px 0 !important;
                 font-size: 15px !important;

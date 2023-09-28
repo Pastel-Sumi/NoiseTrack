@@ -1,13 +1,15 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { Table, Loader } from "semantic-ui-react";
-import { map, size } from "lodash";
+import { map } from "lodash";
+
+import "./UserList.scss";
 
 export function UserList(props) {
-    const { workers } = props
+    const { workers, loading } = props
 
-    if(size(workers) === 0){
+    if(loading){
         return (
-            <div>
+            <div className='userList-container'>
                 <h2>Lista de usuarios registrados</h2> 
             
                 <Loader active inline="centered" size="large">
@@ -17,10 +19,8 @@ export function UserList(props) {
         )
     }
 
-    console.log("workers", workers)
-
     return (
-        <div>
+        <div className='userList-container'>
         <h2>Lista de usuarios registrados</h2> 
 
         <Table>
