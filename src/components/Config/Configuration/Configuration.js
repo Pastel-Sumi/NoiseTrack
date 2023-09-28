@@ -1,43 +1,67 @@
 import React, { useState, useEffect } from 'react';
-import { Form, Icon, Table } from "semantic-ui-react";
+import { Form, Icon } from "semantic-ui-react";
 import { useFormik } from "formik"
 
 import "./Configuration.scss"
 
 import { initialValues, validationSchema } from './Configuration.data';
 import { UserList } from "../UserList";
-import { Worker } from "../../../api";
-import { map } from 'lodash';
+import { CameraForm } from "../CameraForm";
+import { Worker, Workerplace, Camera } from "../../../api";
 
 const workerController = new Worker();
+const workplaceController = new Workerplace();
+const cameraController = new Camera();
 
-const options = [
-  { key: 'sala1', text: 'Sala 1', value: 'Sala 1' },
-  { key: 'sala2', text: 'Sala 2', value: 'Sala 2' },
+const cameras1 = [
+  { key: '1', text: 'Camara 1', value: 'Camara 1', place:'Sala 1' },
+  { key: '2', text: 'Camara 2', value: 'Camara 2', place:'Sala 2' },
 ];
 
-const cameras = [
-  { key: 'cam1', text: 'Camara 1', value: 'Camara 1' },
-  { key: 'cam2', text: 'Camara 2', value: 'Camara 2' },
+const workplaces1 = [
+  { key: '1', text: 'Sala 1', value: 'Sala 1' },
+  { key: '2', text: 'Sala 2', value: 'Sala 2' },
 ];
 
 export function Configuration() {
 
-  const [selectorPlace, setPlaceSelector] = useState(options[0].value);
-
+  const [selectorPlace, setPlaceSelector] = useState("Sala 1");
   let [workers, setWorkers] = useState([]);
-  let workersAux = []
-
-  console.log(workers)
+  let [workplaces, setWorkplaces] = useState([]);
+  let [cameras, setCameras] = useState([]);
+  let [loading, setLoading] = useState(true);
+  let workersAux = [];
+  let workplaceAux = [];
+  let cameraAux = [];
 
   useEffect(() => {
     (async () => {
         try{
-            const response = await workerController.getAll();
-            response.forEach(worker => {
-              workersAux.push(worker)
+            const workerResponse = await workerController.getAll();
+            const workplaceResponse = await workplaceController.getAll();
+            const cameraResponse = await cameraController.collectionName.getAll();
+
+            workerResponse.forEach(worker => {
+              workersAux.push(worker);
             })
-            setWorkers(workersAux)
+            cameraResponse.forEach(camera => {
+              cameraAux.push(camera);
+            })
+
+            if(workplaceResponse.length !== 0){
+              setPlaceSelector(workplaceResponse[0].value)
+            }
+            workplaceResponse.forEach(workplace => {
+              workplaceAux.push({
+                key: workplace.id,
+                text: workplace.place,
+                value: workplace.place,
+              });
+            })
+            setWorkers(workersAux);
+            setWorkplaces(workplaceAux);
+            setCameras(cameraAux);
+            setLoading(false);
         } catch (error){
             console.log(error)
         }
@@ -50,16 +74,13 @@ export function Configuration() {
     validateOnChange: false,
     onSubmit: async (formValue) => {
       try{
-        console.log( "nuevo usuario",
-          formValue.email, formValue.username, selectorPlace
-        )
+
         setWorkers([...workers, {
           username: formValue.username,
-          place: formValue.email,
-          email: selectorPlace,
+          place: selectorPlace,
+          email: formValue.email,
           created: new Date(),
         }])
-        //setorkers([...workers, { email:formValue.email, username:formValue.username, place:selectorPlace}])
         //await workerController.create(formValue.email, formValue.username, selectorPlace)
       }catch(error){
         console.error(error);
@@ -97,8 +118,8 @@ export function Configuration() {
                   error={formik.errors.email}/>
 
                 <Form.Select
-                    placeholder='place'
-                    options={options}
+                    placeholder='Lugar de trabajo'
+                    options={workplaces}
                     required={true}
                     value={selectorPlace}
                     onChange={handleChange}
@@ -113,14 +134,10 @@ export function Configuration() {
       </div>
       <h2 className='configuration-container__title'>Configuración de cámaras y micrófonos</h2>
       <div className='configuration-container__cam'>
-        <div className='cam-update'>
-              <Icon className='icon' name='video camera'/>
-              <p className='info'>Cambiar ubicación cámara y micrófono: </p>
-        </div>
+        <CameraForm cameras={cameras1} workplaces={workplaces1}/>
       </div>
 
-      <UserList workers={workers}/>
-
+      <UserList workers={workers} loading={loading}/>
 
     </div>
   )

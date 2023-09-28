@@ -7,7 +7,7 @@ export function Config() {
 
   return (
     <div className='config-container'>
-      <h1 className='config-container__title'>Panel de configuaciones</h1>
+      <h1 className='config-container__title'>Panel de configuraciones</h1>
       <div className='config-container__body'>
         <Configuration/>
       </div>
