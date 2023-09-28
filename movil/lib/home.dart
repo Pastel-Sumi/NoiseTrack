@@ -111,7 +111,7 @@ class ListTileExample extends StatelessWidget {
                 var type = snapshot.data?[index]['type'];
                 var color;
                 var icon;
-                if (type == 1){
+                if (type == 2){
                   color = Colors.red[300];
                   icon = const Icon(Icons.warning);
                 }
