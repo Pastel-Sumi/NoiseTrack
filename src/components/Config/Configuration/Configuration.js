@@ -39,14 +39,14 @@ export function Configuration() {
         try{
             const workerResponse = await workerController.getAll();
             const workplaceResponse = await workplaceController.getAll();
-            const cameraResponse = await cameraController.collectionName.getAll();
-
+            //const cameraResponse = await cameraController.collectionName.getAll();
+            console.log(workerResponse)
             workerResponse.forEach(worker => {
               workersAux.push(worker);
             })
-            cameraResponse.forEach(camera => {
-              cameraAux.push(camera);
-            })
+            //cameraResponse.forEach(camera => {
+              //cameraAux.push(camera);
+            //})
 
             if(workplaceResponse.length !== 0){
               setPlaceSelector(workplaceResponse[0].value)
@@ -60,7 +60,7 @@ export function Configuration() {
             })
             setWorkers(workersAux);
             setWorkplaces(workplaceAux);
-            setCameras(cameraAux);
+            //setCameras(cameraAux);
             setLoading(false);
         } catch (error){
             console.log(error)
@@ -81,7 +81,7 @@ export function Configuration() {
           email: formValue.email,
           created: new Date(),
         }])
-        //await workerController.create(formValue.email, formValue.username, selectorPlace)
+        await workerController.create(formValue.email, formValue.username, selectorPlace)
       }catch(error){
         console.error(error);
       }

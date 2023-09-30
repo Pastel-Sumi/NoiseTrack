@@ -23,16 +23,16 @@ import firebase_admin
 from firebase_admin import credentials
 from firebase_admin import firestore
 import uuid
-cred = credentials.Certificate("noisetrack3-firebase-adminsdk-8d5io-77d82c21f0.json")
+cred = credentials.Certificate("noisetrack2-firebase-adminsdk-9jtjm-df8b88271f.json")
 firebase_admin.initialize_app(cred)
 
 
 sio = socketio.Server(cors_allowed_origins='*')
 
-current_db = 100
+current_db = 66
 current_db_epp = 0
 
-current_db2 = 100
+current_db2 = 66
 current_db2_epp = 0
 
 db_time = {
@@ -119,8 +119,8 @@ db_time_test = {
     62: 150,
     63: 150,
     64: 150,
-    65: 150,
-    66: 150,
+    65: 50,
+    66: 80,
     67: 150,
     68: 150,
     69: 150,
@@ -209,21 +209,21 @@ db_time_test = {
 
 
             conn.close()
-    except OSError as e:
+    except OSError as e:666666666666666666666666666666666666666666666666666666666666666666666666666666666666666666666666666666666666666666666666
         print("Error al establecer la conexión:", str(e)) """
 
 @sio.on('message')
 def handler_message(sio, data):
     global current_db, current_db2, current_db2_epp, current_db_epp
     if(data[0]=='1'):
-        pass
-        #current_db = round(float(data[2:]))
-        #current_db_epp = current_db - 10
+        #pass
+        current_db = round(float(data[2:]))
+        current_db_epp = current_db - 10
     elif(data[0]=='2'):
-        #current_db2 = round(float(data[2:]))
-        #current_db2_epp = current_db2 - 10
-        pass
-    
+        current_db2 = round(float(data[2:]))
+        current_db2_epp = current_db2 - 10
+        #pass
+
     
     
 
@@ -370,7 +370,7 @@ def camera_process(source_name, source):
                         if class_id == 1:
                             if duration.seconds > db_time_test[aux_db]/8 and tracker_id not in trackers_exceeded_limit_8:
                                 message = f" Un trabajador ha excedido el 1/8 de la exposición a {aux_db} [dB] con {duration.seconds}"
-                                print(message)
+                                #print(message)
                                 
                                 trackers_exceeded_limit_8.add(tracker_id)
                                 data = {
@@ -412,7 +412,7 @@ def camera_process(source_name, source):
                         
                         if duration.seconds > db_time_test[aux_db] and tracker_id not in trackers_exceeded_limit:
                             message = f" Un trabajador ha excedido tiempo de la exposición a {aux_db} [dB] con {duration.seconds}"
-                            print(message)
+                            #print(message)
                             trackers_exceeded_limit.add(tracker_id)
                             data = {
                                     'time': duration.seconds, 
@@ -483,9 +483,9 @@ def camera_process(source_name, source):
 
 
 def main():
-    camera_source_1 = "rtsp://sumisumi:esteban535@192.168.137.33:88/videoMain"
+    camera_source_1 = "rtsp://sumisumi:esteban535@192.168.137.13:88/videoMain"
     camera_source_2 = 0
-    #camera_source_2 = "rtsp://sumisumi:esteban535@192.168.137.107:88/videoMain"
+    #camera_source_2 = "rtsp://sumisumi:esteban535@192.168.137.131:88/videoMain"
     camera1_thread = threading.Thread(target=camera_process, args=("Camera 1", camera_source_1))
     camera2_thread = threading.Thread(target=camera_process, args=("Camera 2", camera_source_2))
 

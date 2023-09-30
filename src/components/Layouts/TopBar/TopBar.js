@@ -26,7 +26,7 @@ export function TopBar() {
     startOfToday.setHours(0,0,0,0);
     const q = query(collection(bd, "alerts"), where("created", ">=", startOfToday), orderBy("created","desc"));
     // Create the DB listener
-    //getAlert(q)
+    getAlert(q)
   });
 
   const handleGoAlert = () => {
