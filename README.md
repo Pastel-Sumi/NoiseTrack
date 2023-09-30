@@ -1,3 +1,31 @@
+# Getting Started with Tracker
+This project use python yolov8 model to make predictions of real time images and then track the classes that the user give in parameters. In this case we use a custom model "yolov8m_custom.pt" (it's to heavy to upload in git, but [here](https://drive.google.com/file/d/1u3UbiHKh4uM2S4uazFzHjBdJCgDJl-T2/view?usp=sharing) is the link to download it). To run this side of the project in your own computer this are the steps:
+
+1- (Optional) Use conda to make an environment.
+
+2- Install ultralytics dependences (this library have all we need to work with AI, yolov8 and more models) and ultravision with this command:
+
+```ssh
+pip install ultralytics
+pip install supervision
+```
+
+The requirements.txt is on the way
+
+3- When ultralytics is installed, this by default install pytorch with cpu dependences. The tracker need more power, so we need to install pytorch with CUDA dependences (we have to say that this project only works with CUDA, that are only avaible in nvidia GPUs sadly). In this [official pytorch page](https://pytorch.org/get-started/locally/) select the labels acording to your OS and may sure to select 11.7 and python (select conda if you are using it). This gives you the command to use in your terminal. For example, in windows 10 and using pip this is the given command:
+
+```ssh
+pip3 install --upgrade torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu117
+```
+Notice that the flag "--upgrade" is added, this because we already have a version of pytorch and we only need to upgrade it. We can see if the installation is ok by running python and type:
+```python 
+import torch
+torch.__version__
+```
+
+And that's all, have fun!
+
+
 # Getting Started with Create React App
 
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
