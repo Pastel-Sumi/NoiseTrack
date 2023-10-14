@@ -57,7 +57,7 @@ export function LeftMenu() {
             />
             <Menu.Item
               as={Link} to="/report"
-              name='Reportes'
+              name='Informes'
               icon="file alternate outline"
               active={isCurrentPage("/report")}
             />

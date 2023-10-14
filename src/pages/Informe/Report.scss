@@ -1,6 +1,6 @@
-@import "~/src/scss/index";
+@import "~/src/scss/index"; 
 
-.alert-container {
+.report-container {
     justify-content: center;
     margin: 1.5rem;
 
@@ -8,5 +8,11 @@
         text-align:center;
         font-size: 40px;
         margin: 1.5rem;
+    }
+
+    &__body {
+        height: 78vh;
+        overflow-x: hidden;
+        overflow-y:scroll; 
     }
 }

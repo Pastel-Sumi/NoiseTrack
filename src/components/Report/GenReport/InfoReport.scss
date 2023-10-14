@@ -1,0 +1,146 @@
+@import "~/src/scss/index"; 
+
+
+.infoReport-container {
+    .ui.selection.dropdown {
+        background-color: $primary-color-hover;
+        border-color: $primary-color-hover !important;
+        .text{
+            color: $font-light !important;
+        }
+
+        .item{
+            background-color: $primary-color-hover;
+        }
+
+        i {
+            color: $font-light !important;
+        }
+
+        &.active {
+            .item{
+                background-color: $primary-color-hover;
+            }
+
+            :hover,
+            .menu,
+            :focus{
+                background-color: $primary-color-hover !important;
+                border-color: $font-light !important;
+            }
+        }
+        
+    }
+
+    .selector {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+    }
+
+    .report {
+        align-items: center;
+        display: flex;
+    }
+
+    .date {
+        align-items: center;
+        display: flex;
+        margin-left: 1.5rem;
+        margin-right: 1.5rem;
+    }
+
+    .icon-calendar {
+        font-size: 20px;
+    }
+
+    .react-datepicker__input-container input {
+        color: $font-light;
+        background-color: $primary-color-hover;
+        border-radius: 4px;
+        padding: 10px 10px;
+        border: 0;
+    }
+
+    .react-datepicker {
+        font-size: 15px !important;
+        color: $font-light !important;
+        background-color: $primary-color-hover;
+        font-family: Lato,'Helvetica Neue',Arial,Helvetica,sans-serif;
+      
+        &__header {
+          background-color: $primary-color-hover !important;
+          padding-top: 5px !important;
+        }
+
+        &__current-month {
+            color: $font-light;
+            font-size: 14px;
+        }
+      
+        &__day-name {
+          color: $font-grey !important;
+        }
+      
+        &__day {
+          color: $font-light !important;
+
+          &:hover {
+            border-radius: 4px;
+            background-color: $primary-color;
+          }
+      
+          &--keyboard-selected,
+          &--selected {
+            border-radius: 25px !important;
+            background: $danger2 !important;
+            color: $font-light !important;
+          }
+          &--disabled {
+            color: $font-grey !important;
+          }
+        }
+      }
+
+    .label-selector {
+        font-size: 15px;
+        margin-bottom: 0.5rem;
+        margin-right: 1rem;
+    }
+
+    &__body{
+        margin-top: 1.5rem;
+        margin-bottom: 1.5rem;
+        margin-right: 1.5rem;
+    }
+
+    .ui.button {
+        padding: 13px 0;
+        font-size: 15px;
+        background-color: $primary-color-hover;
+        color: $font-light;
+    }
+
+    .ui.button.all {
+        font-size: 15px;
+        background-color: $primary-color-hover;
+        color: $font-light;
+        margin-right: 1rem;
+    }
+
+    .ui.table {
+            background-color: $primary-color-hover;
+            text-align: center !important;
+
+                th{
+                    background-color: $primary-color-hover;
+                    color: $font-light;
+                    border-color: $font-light !important;
+                }
+
+                td{
+                    border-color: $font-light !important;
+                }
+
+        }
+}

@@ -9,9 +9,11 @@ import {
 } from 'firebase/firestore'
 import { initFirebase } from '../../config/firebase';
 import { Line } from 'react-chartjs-2'; 
+import { jsPDF } from 'jspdf';
 import Chart from 'chart.js/auto';
 
 import "./Report.scss"
+import { Button } from 'semantic-ui-react';
 
 //const date = new Date();
 
@@ -34,6 +36,31 @@ export function Report() {
   var fecha_end = new Date();
   fecha_ini.setUTCHours(0,0,0,0)
   fecha_end.setUTCHours(23,59,59,999);
+
+
+  const facturaData = {
+    numero: "123456",
+    producto: "Pizza",
+    cantidad: 5,
+    precio: 2000,
+    fecha: "2023-09-11",
+    cliente: "Sofia",
+    total: 10000,
+  }
+
+  const generarPDF = () => {
+    const doc = new jsPDF();
+
+    doc.text("Factura", 95,20);
+    doc.text(`Numero de factura: ${facturaData.numero}`, 10,20);
+    doc.text(`Numero de factura: ${facturaData.fecha}`, 10,30);
+    doc.text(`Numero de factura: ${facturaData.cliente}`, 10,40);
+    doc.text(`Numero de factura: ${facturaData.total}`, 10,50);
+    
+
+    //Guardar pdf con nombre especifico
+    doc.save(`factura_${facturaData.numero}.pdf`)
+  }
 
   useEffect(() => {
     const fetchData = async () => {
@@ -95,6 +122,9 @@ export function Report() {
 
   return (
     <div className='Reporte'>
+      <Button onClick={generarPDF}>
+        Generar pdf
+      </Button>
       <div>
         <h1>{currentDate}</h1>
       </div>

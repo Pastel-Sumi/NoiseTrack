@@ -7,9 +7,6 @@ const { spawn } = require('child_process');
 const path = require("path");
 const isDev = require("electron-is-dev");
 
-//Conexión mongoDB
-require("../src/config/mongodb");
-
 let mainWindow;
 
 function createWindow() {
@@ -32,7 +29,7 @@ function createWindow() {
   if (isDev) mainWindow.webContents.openDevTools();
   // Ejecutar el script de Python al iniciar la aplicación
   const pythonScriptPath = 'tracker.py'; 
-  const pythonProcess = spawn('python', [pythonScriptPath]);
+  const pythonProcess = spawn('py', [pythonScriptPath]);
 
   
   pythonProcess.stdout.on('data', (data) => {

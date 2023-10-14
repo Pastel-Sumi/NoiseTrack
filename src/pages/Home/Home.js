@@ -16,7 +16,6 @@ export function Home() {
   const [selectedSource, setSelectedSource] = useState(videoSources[0].value);
 
   const handleVideoSourceChange = (event, { value }) => {
-    console.log("aaaa")
     if(value === 'http://localhost:8000/video'){
       micro = 1;
     }else if(value === 'http://localhost:8001/video'){
@@ -45,7 +44,6 @@ export function Home() {
         <Decibels/>
         <Tracker selectedSource={selectedSource}/> 
       </div>
-      
     </div>
 
   )
