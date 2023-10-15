@@ -1,11 +1,11 @@
 import React, { useEffect, useState } from 'react';
 import { Select, Loader, Table, TableCell, Button, Icon, Checkbox } from "semantic-ui-react";
 import DatePicker, { registerLocale } from 'react-datepicker';
-import 'react-datepicker/dist/react-datepicker.css';
 import es from "date-fns/locale/es";
 import { map } from "lodash";
 
 import { Reports } from "../../../api";
+import 'react-datepicker/dist/react-datepicker.css';
 import "./InfoReport.scss";
 
 const reportController = new Reports();
@@ -17,10 +17,12 @@ export function InfoReport() {
         { key: '2', text: 'Informe semanal', value: 'semanal'},
         { key: '3', text: 'Informe mensual', value: 'mensual'},
     ])
-    const [selectedReport, setSelectedReport] = useState(reports[0]);
     const [workplaces, setWorkplaces] = useState([]);
+
+    const [selectedReport, setSelectedReport] = useState(reports[0]);
     const [loading, setLoading] = useState(true);
-    const [selectedDate, setSelectedDate] = useState(new Date())
+    const [selectedDate, setSelectedDate] = useState(new Date());
+    const [listSelectedReports, setListSelectedReports] = useState({});
 
     useEffect (() => {
         (async () => {
@@ -34,6 +36,10 @@ export function InfoReport() {
         })()
     }, [])
 
+    ///////////////////////////////
+    /// Administración informes ///
+    ///////////////////////////////
+
     const handleReportChange = (event, { value }) => {
         let selected = {}
         if(value === 'diario'){
@@ -44,7 +50,37 @@ export function InfoReport() {
             selected = reports[2];
         }
         setSelectedReport(selected);
-      };
+    };
+
+    const handleReportCheckbox = (e, data, id) => {
+        let checked = data.checked
+        let newList = {
+            ...listSelectedReports,
+            [id]: checked,
+        }
+        setListSelectedReports(newList)
+    }
+    
+    //////////////////////////////
+    /// Generación de informes ///
+    //////////////////////////////
+
+    //Informe global
+    const handleReportGlobal = (e) => {
+        console.log("informe global")
+    }
+
+    //Informe individual por lugar
+    const handleReport = async (e, workplace) => {
+        console.log(workplace, selectedReport.key, selectedDate)
+        await reportController.genReportPlace(workplace, selectedReport.key, selectedDate)
+        console.log("informe individual")
+    }
+
+    //Informe individual seleccionado
+    const handleReportZip = (e) => {
+        console.log("informe individual seleccionados")
+    }
 
     let container = loading ? (
         <Loader active inline="centered" size="large">
@@ -55,7 +91,7 @@ export function InfoReport() {
             <div className='infoReport-container__selector'>
                 <div className='selector'>
                     <div className='report'>
-                        <p className='label-selector'>Seleccione un tipo de informe:</p>
+                        <p className='label-selector'>Tipo de informe:</p>
                         <Select
                             id="report-select"
                             options={reports}
@@ -93,10 +129,16 @@ export function InfoReport() {
                     <Table.Body>
                         {map(workplaces, (workplace) => (
                             <Table.Row key={workplace.id}>
-                                <Table.Cell>{<Checkbox/>}</Table.Cell>
+                                <Table.Cell>{<Checkbox
+                                        checked={listSelectedReports[workplace.id]}
+                                        onChange={(e, data) => handleReportCheckbox(e, data, workplace.id)}
+                                        inputProps={{ 'aria-label': 'controlled' }}
+                                        defaultChecked={false}
+                                    />}
+                                </Table.Cell>
                                 <Table.Cell>{workplace.place}</Table.Cell>
                                 <Table.Cell>{workplace.workers}</Table.Cell>
-                                <TableCell>{<Button icon>
+                                <TableCell>{<Button icon onClick={e => handleReport(e, workplace)}>
                                                 <Icon className='icon-download' name='download'/>
                                             </Button>}
                                 </TableCell>
@@ -105,11 +147,11 @@ export function InfoReport() {
                     </Table.Body>
                 </Table>
 
-                {/* <Button icon className='all'>
-                    Descargar reporte general 
-                </Button> */}
+                <Button icon className='all' onClick={e => handleReportGlobal(e)}>
+                    Descargar informe general 
+                </Button>
 
-                <Button icon className='all'>
+                <Button icon className='selected' onClick={e => handleReportZip(e)}>
                     Descargar informes seleccionados
                 </Button>
             </div>

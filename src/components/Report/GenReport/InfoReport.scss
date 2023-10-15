@@ -104,9 +104,10 @@
 
     .label-selector {
         font-size: 15px;
-        margin-bottom: 0.5rem;
+        margin-bottom: 0.4rem;
         margin-right: 1rem;
     }
+
 
     &__body{
         margin-top: 1.5rem;
@@ -121,10 +122,12 @@
         color: $font-light;
     }
 
+    .ui.button.selected,
     .ui.button.all {
         font-size: 15px;
         background-color: $primary-color-hover;
         color: $font-light;
+        margin-top: 1.5rem;
         margin-right: 1rem;
     }
 
