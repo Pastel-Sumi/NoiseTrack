@@ -55,17 +55,37 @@ export class Reports {
                 formatDate = date.toLocaleDateString("es-ES", {month: 'long'}) + date.toLocaleDateString("es-ES", {year: 'numeric'});
             }
 
-            const doc = new jsPDF();
-            const name = "nombre empresa"
+            let data = {
+                name: "nombre empresa",
+                epa: 60,
+                no_epa: 40,
+                total_alert: 50,
+                alert_m:36,
+                alert_u:14
+
+            }
+            const doc = new jsPDF("p", "mm", "a4");
 
             //-------------Imagenes------------------------------
             doc.addImage(logo64, 'JPEG', 13, 10, 25, 25);
 
+            //------------Figuras-------------------------------
+            doc.rect(10, 40, 190, 0.001)
+            doc.rect(10, 58, 190, 0.001)
+
+            doc.setFillColor(221, 196, 33);
+            doc.roundedRect(40, 65, 55, 40, 4, 4, 'F')
+            doc.setFillColor(222, 113, 118);
+            doc.roundedRect(115.5, 65, 55, 40, 4, 4, 'F')
+
+            doc.rect(10, 112, 190, 0.001)
+            doc.rect(10, 192, 190, 0.001)
+
             //-------------Texto---------------------------------
-            doc.setFont("Lato").setFontSize(20).text(`Informe ${type} por área de trabajo`, 195, 25,  {align: 'right'});
-            doc.setFont("Lato").setFontSize(15).text(`${name}`, 195, 33,  {align: 'right'});
-            doc.setFont("Lato").setFontSize(13).text(`Área de trabajo: ${workplace.place}`, 13, 47,  {align: 'left'} )
-            doc.setFont("Lato").setFontSize(13).text(`Total de trabajadores: ${workplace.workers}`, 13,53,  {align: 'left'} )
+            doc.setFont("Helvetica").setFontSize(20).text(`Informe ${type} por área de trabajo`, 195, 25,  {align: 'right'});
+            doc.setFont("Helvetica").setFontSize(15).text(`${data.name}`, 195, 33,  {align: 'right'});
+            doc.setFont("Helvetica").setFontSize(13).text(`Área de trabajo: ${workplace.place}`, 13, 47,  {align: 'left'} );
+            doc.setFont("Helvetica").setFontSize(13).text(`Total de trabajadores: ${workplace.workers}`, 13,53,  {align: 'left'} );
 
             if(type === "semanal"){
                 let auxDate = new Date();
@@ -73,35 +93,33 @@ export class Reports {
                 let startDate = auxDate.toLocaleDateString("es-ES")
                 let endDate = date.toLocaleDateString("es-ES")
 
-                doc.setFont("Lato").setFontSize(13).text(`Inicio: ${startDate}`, 197 ,47,  {align: 'right'} )
-                doc.setFont("Lato").setFontSize(13).text(`Fin: ${endDate}`, 197 ,53,  {align: 'right'} )
+                doc.setFont("Helvetica").setFontSize(13).text(`Inicio: ${startDate}`, 197 ,47,  {align: 'right'} )
+                doc.setFont("Helvetica").setFontSize(13).text(`Fin: ${endDate}`, 197 ,53,  {align: 'right'} )
 
             }else if(type === "diario"){
-                doc.setFont("Lato").setFontSize(13).text(`Día: ${formatDate}`, 197 , 47,  {align: 'right'} )
+                doc.setFont("Helvetica").setFontSize(13).text(`Día: ${formatDate}`, 197 , 47,  {align: 'right'} )
 
             }else{  
                 let mounth = date.toLocaleDateString("es-ES", {month: 'long'})
                 let year = date.toLocaleDateString("es-ES", {year: 'numeric'})
-                doc.setFont("Lato").setFontSize(13).text(`Mes: ${mounth} ${year}`, 197 ,47,  {align: 'right'} )
+                doc.setFont("Helvetica").setFontSize(13).text(`Mes: ${mounth} ${year}`, 197 ,47,  {align: 'right'} )
             }
 
-            doc.setFont("Lato").setFontSize(30).text(`${60}%`, 52.5, 78,  {align: 'center'})
-            doc.setFont("Lato").setFontSize(15).text(`Uso de equipo`, 52.5, 85,  {align: 'center'})
-            doc.setFont("Lato").setFontSize(15).text(`de protección auditivo`, 52.5, 90,  {align: 'center'})
-            doc.setFont("Lato").setFontSize(30).text(`${40}%`, 157.5, 78,  {align: 'center'})
-            doc.setFont("Lato").setFontSize(15).text(`No uso de equipo`, 157.5, 85,  {align: 'center'})
-            doc.setFont("Lato").setFontSize(15).text(`de protección auditivo`,  157.5, 90,  {align: 'center'})
+            doc.setFont("Helvetica").setFontSize(35).setTextColor(255,255,255).text(`${data.epa}%`, 69.5, 82,  {align: 'center'});
+            doc.setFont("Helvetica").setFontSize(15).setTextColor(255,255,255).text(`Uso de equipo`, 67.5, 93,  {align: 'center'});
+            doc.setFont("Helvetica").setFontSize(15).setTextColor(255,255,255).text(`de protección auditivo`, 67.5, 98,  {align: 'center'});
+            doc.setFont("Helvetica").setFontSize(35).setTextColor(255,255,255).text(`${data.no_epa}%`, 144.5, 82,  {align: 'center'});
+            doc.setFont("Helvetica").setFontSize(15).setTextColor(255,255,255).text(`No uso de equipo`, 142.5, 93,  {align: 'center'});
+            doc.setFont("Helvetica").setFontSize(15).setTextColor(255,255,255).text(`de protección auditivo`,  142.5, 98,  {align: 'center'});
+
+            doc.setFont("Helvetica").setFontSize(15).setTextColor(0,0,0).text("Decibeles generados durante el peridodo", 13,120,  {align: 'left'} );
+            
+            doc.setFont("Helvetica").setFontSize(15).setTextColor(0,0,0).text("Distribución de alertas producidas", 13,200,  {align: 'left'} );
+            doc.setFont("Helvetica").setFontSize(13).setTextColor(0,0,0).text(`Total de alertas: ${data.total_alert}`, 13,280,  {align: 'left'} );
+            doc.setFont("Helvetica").setFontSize(13).setTextColor(0,0,0).text(`Alertas moderadas: ${data.alert_m}`, 13,285,  {align: 'left'} );
+            doc.setFont("Helvetica").setFontSize(13).setTextColor(0,0,0).text(`Alertas urgentes: ${data.alert_u}`, 13,290,  {align: 'left'} );
 
 
-
-            //------------Figuras-------------------------------
-            doc.rect(10, 40, 190, 0.001)
-            doc.rect(10, 58, 190, 0.001)
-
-            doc.setFillColor(221, 196, 33);
-            doc.roundedRect(25, 65, 55, 40, 4, 4, 'F')
-            doc.setFillColor(222, 113, 118);
-            doc.roundedRect(130.5, 65, 55, 40, 4, 4, 'F')
 
             //-----------Graficos-------------------------
 
