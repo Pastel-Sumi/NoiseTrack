@@ -3,8 +3,6 @@ import { map } from "lodash";
 import { bd } from "../config";
 import { jsPDF } from 'jspdf';
 
-import logo from "../assets/png/logo.png";
-
 export class Reports {
     collectionName = "workplace";
     collectionName2 = "workers";

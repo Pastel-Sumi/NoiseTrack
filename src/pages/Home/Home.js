@@ -5,8 +5,8 @@ import "./Home.scss";
 import { Tracker, Decibels } from "../../components/Tracing";
 
 const videoSources = [
-  { key: 'video1', text: 'Video 1', value: 'http://localhost:8000/video' },
-  { key: 'video2', text: 'Video 2', value: 'http://localhost:8001/video' },
+  { key: 'video1', text: 'Sala 1', value: 'http://localhost:8000/video' },
+  { key: 'video2', text: 'Sala 2', value: 'http://localhost:8001/video' },
 ];
 
 export let micro = 1
@@ -41,7 +41,7 @@ export function Home() {
         </div>
       </div>
       <div className='home-container__body'>
-        <Decibels/>
+        <Decibels micro={micro}/>
         <Tracker selectedSource={selectedSource}/> 
       </div>
     </div>

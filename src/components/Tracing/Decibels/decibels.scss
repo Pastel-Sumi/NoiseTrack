@@ -1,0 +1,20 @@
+@import "~/src/scss/index"; 
+
+
+.decibels-container {
+    justify-content: center;
+    margin: 1.5rem;
+
+    &__graph{
+        display: flex;
+        justify-content: center;
+    }
+
+    .ui.button {
+        font-size: 15px;
+        background-color: $primary-color-hover;
+        color: $font-light;
+        margin-top: 1.5rem;
+        margin-right: 1rem;
+    }
+}
