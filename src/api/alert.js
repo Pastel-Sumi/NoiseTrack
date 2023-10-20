@@ -31,4 +31,19 @@ export class Alerts{
             throw error
         }
     }
+
+    async getDate(date){
+        try{
+            const docRef = collection(bd, this.collectionName);
+            var startOfToday = new Date(date);
+            var endOfToday = new Date(date); 
+            startOfToday.setHours(0,0,0,0);
+            endOfToday.setHours(23, 59, 0);
+            const q = query(docRef, where('created','>=',startOfToday), where('created','<=', endOfToday),(orderBy("created", "desc")));
+            const snapshop = await getDocs(q)
+            return map(snapshop.docs, (doc) => doc.data());
+        }catch(error){
+            throw error
+        }
+    }
 }

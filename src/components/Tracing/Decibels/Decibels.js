@@ -138,7 +138,7 @@ export function Decibels(props) {
     const unsuscribe = await onSnapshot(query, (doc) => {
       if(decibels2.length === 0){
         doc.docChanges().forEach((change) => {
-          let date = formatDate(new Date(change.doc.data().date).getTime())
+          let date = formatDate(new Date(change.doc.data().date))
           let db = Math.round((change.doc.data().db + Number.EPSILON) * 100) / 100;
           decibels2.push({
             name: date,
@@ -148,8 +148,7 @@ export function Decibels(props) {
         data2 = decibels2.slice(-limite); //Datos del grafico
       }else{
           doc.docChanges().forEach((change) => {
-            decibels2.shift(); // Eliminar el dato más antiguo
-            let date = formatDate(new Date(change.doc.data().date).getTime())
+            let date = formatDate(new Date(change.doc.data().date))
             let db = Math.round((change.doc.data().db + Number.EPSILON) * 100) / 100;
             decibels2.push({
               name: date,
@@ -157,15 +156,16 @@ export function Decibels(props) {
             }) // Agregar un nuevo dato
 
             //Envio datos al tracker de microfono 1
-            let mic1 = decibels2[decibels2.length - 1].value[1];
+            let mic2 = decibels2[decibels2.length - 1].value[1];
             try {
-              sendDecibels("2 "+ mic1);
+              sendDecibels("2 "+ mic2);
             } catch (error) {
               throw error
             }
-            data2 = decibels2.slice(-limite); //Datos del grafico
           }) 
+          data2 = decibels2.slice(-limite); //Datos del grafico
       } 
+      changeInterval();
   });
     return () => {
         unsuscribe();
@@ -327,22 +327,38 @@ export function Decibels(props) {
   };
 
   //Crea datos de prueba
-  /* const create = async () => {
+   const create1 = async () => {
     try {
       const idCamera = uuidv4(); //crea id de la decibel
       const date = new Date().getTime();
       const place = "Sala 1";
       var min = 55.1;
-      var max = 193.36;
+      var max = 100.36;
       var random = Math.random()*(max - min)+min
       const db = random
-      const data = { id: idCamera, date, place, db};
+      const data = { id: idCamera, camara: 1, date, place, db};
       const docRef = doc(bd, 'decibeles', idCamera);
       await setDoc(docRef, data);
       } catch (error) {
           throw error;
       }
-  } */
+  } 
+  const create2 = async () => {
+    try {
+      const idCamera = uuidv4(); //crea id de la decibel
+      const date = new Date().getTime();
+      const place = "Sala 2";
+      var min = 55.1;
+      var max = 100.36;
+      var random = Math.random()*(max - min)+min
+      const db = random
+      const data = { id: idCamera, camara: 2, date, place, db};
+      const docRef = doc(bd, 'decibeles2', idCamera);
+      await setDoc(docRef, data);
+      } catch (error) {
+          throw error;
+      }
+  } 
 
   let container = loading ? (
     <Loader active inline="centered" size="large">
@@ -364,7 +380,8 @@ export function Decibels(props) {
             </div>
         </div>
 
-      {/*<Button onClick={create}> Nuevo decibel</Button>*/}
+      <Button onClick={create1}> Nuevo decibel para Sala 1</Button>
+      <Button onClick={create2}> Nuevo decibel para Sala 2</Button>
 
     </div>
   )
