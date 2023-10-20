@@ -321,7 +321,8 @@ def camera_process(source_name, source):
     aux_db = 0
     date_time = datetime.now().strftime("%m-%d-%Y, %H:%M:%S")
     created = datetime.now()
-    for result in model.track(source, show=False, stream=True, persist=True, agnostic_nms=True, verbose=False,show_conf=False, conf=0.7, save=False, classes=[1,2]):
+    workers = set()
+    for result in model.track(source, show=False, stream=True, persist=True, agnostic_nms=True, verbose=False,show_conf=False, conf=0.7, save=False, classes=[0,1,2]):
         
         frame = result.orig_img
         detections = sv.Detections.from_ultralytics(result)
@@ -344,8 +345,48 @@ def camera_process(source_name, source):
                 elif class_id == 2:
                     aux_db = current_db2_epp
             
+            text_color = 0
+
+            show_text_bottom_left = False
+            if aux_db > 80:
+                show_text_bottom_left = True
+                text_color = (0, 0, 255)  # Rojo
+
+            # Agrega el texto en la esquina inferior izquierda si es necesario.
+            if show_text_bottom_left:
+                text = "USO DE EPP NECESARIO"  # Reemplaza con el texto que deseas mostrar
+                font = cv2.FONT_HERSHEY_PLAIN
+                font_scale = 1
+                thickness = 1
+
+                text_size = cv2.getTextSize(text, font, font_scale, thickness)[0]
+                text_x = 10
+                text_y = frame.shape[0] - text_size[1] - 10
+
+                # Agrega el texto con el color correspondiente.
+                cv2.putText(frame, text, (text_x, text_y), font, font_scale, text_color, thickness)
+
             label = f"#{tracker_id} {model.model.names[class_id]} {aux_db}[dB]"
             
+            if class_id == 0 and tracker_id not in workers:
+                workers.add(tracker_id)
+
+            font = cv2.FONT_HERSHEY_PLAIN
+            font_scale = 2
+            font_color = (0, 0, 255)  # Color rojo
+            thickness = 1
+
+            # Convierte el conteo a texto.
+            count_text = f"Trabajadores: {len(workers)}"
+
+            # Calcula la posición para el texto en la esquina inferior derecha.
+            text_size = cv2.getTextSize(count_text, font, font_scale, thickness)[0]
+            text_x = frame.shape[1] - text_size[0] - 10
+            text_y = frame.shape[0] - 10
+
+            # Agrega el texto a la imagen.
+            cv2.putText(frame, count_text, (text_x, text_y), font, font_scale, font_color, thickness)
+
             if aux_db >= 15:
                 # Registra el tiempo de inicio de seguimiento si es la primera detección de este tracker_id
                 if tracker_id not in tracker_tracking_start_times and class_id != 0:
@@ -478,12 +519,16 @@ def camera_process(source_name, source):
                 trackers_exceeded_limit.discard(tracker_id)
                 trackers_exceeded_limit_8.discard(tracker_id)
         
+        for tracker_id in workers.copy():
+            if tracker_id not in [tracker_id for _, _, _, _, tracker_id in detections]:
+                workers.discard(tracker_id)
+        
         if cv2.waitKey(1) & 0xFF == ord("q"):
             break
 
 
 def main():
-    camera_source_1 = "rtsp://sumisumi:esteban535@192.168.137.13:88/videoMain"
+    camera_source_1 = "rtsp://sumisumi:esteban535@192.168.137.27:88/videoMain"
     camera_source_2 = 0
     #camera_source_2 = "rtsp://sumisumi:esteban535@192.168.137.131:88/videoMain"
     camera1_thread = threading.Thread(target=camera_process, args=("Camera 1", camera_source_1))
