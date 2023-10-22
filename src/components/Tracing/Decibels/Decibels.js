@@ -380,8 +380,8 @@ export function Decibels(props) {
             </div>
         </div>
 
-      <Button onClick={create1}> Nuevo decibel para Sala 1</Button>
-      <Button onClick={create2}> Nuevo decibel para Sala 2</Button>
+      {/* <Button onClick={create1}> Nuevo decibel para Sala 1</Button>
+      <Button onClick={create2}> Nuevo decibel para Sala 2</Button> */}
 
     </div>
   )

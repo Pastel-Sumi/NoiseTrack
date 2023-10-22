@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Select, Loader, Table, TableCell, Button, Icon, Checkbox } from "semantic-ui-react";
+import { Select, Loader, Table, TableCell, Button, Icon } from "semantic-ui-react";
 import DatePicker, { registerLocale } from 'react-datepicker';
 import es from "date-fns/locale/es";
 import { map } from "lodash";
@@ -22,7 +22,6 @@ export function InfoReport() {
     const [selectedReport, setSelectedReport] = useState(reports[0]);
     const [loading, setLoading] = useState(true);
     const [selectedDate, setSelectedDate] = useState(new Date());
-    const [listSelectedReports, setListSelectedReports] = useState({});
 
     useEffect (() => {
         (async () => {
@@ -51,15 +50,6 @@ export function InfoReport() {
         }
         setSelectedReport(selected);
     };
-
-    const handleReportCheckbox = (e, data, id) => {
-        let checked = data.checked
-        let newList = {
-            ...listSelectedReports,
-            [id]: checked,
-        }
-        setListSelectedReports(newList)
-    }
     
     //////////////////////////////
     /// Generación de informes ///
@@ -75,11 +65,6 @@ export function InfoReport() {
         console.log(workplace, selectedReport.key, selectedDate)
         await reportController.genReportPlace(workplace, selectedReport.key, selectedDate)
         console.log("informe individual")
-    }
-
-    //Informe individual seleccionado
-    const handleReportZip = (e) => {
-        console.log("informe individual seleccionados")
     }
 
     let container = loading ? (
@@ -119,7 +104,6 @@ export function InfoReport() {
                 <Table>
                     <Table.Header>
                         <Table.Row>
-                            <Table.HeaderCell></Table.HeaderCell>
                             <Table.HeaderCell>Lugar</Table.HeaderCell>
                             <Table.HeaderCell>Cantidad de trabajadores</Table.HeaderCell>
                             <Table.HeaderCell>Descargar Informe</Table.HeaderCell>
@@ -129,13 +113,6 @@ export function InfoReport() {
                     <Table.Body>
                         {map(workplaces, (workplace) => (
                             <Table.Row key={workplace.id}>
-                                <Table.Cell>{<Checkbox
-                                        checked={listSelectedReports[workplace.id]}
-                                        onChange={(e, data) => handleReportCheckbox(e, data, workplace.id)}
-                                        inputProps={{ 'aria-label': 'controlled' }}
-                                        defaultChecked={false}
-                                    />}
-                                </Table.Cell>
                                 <Table.Cell>{workplace.place}</Table.Cell>
                                 <Table.Cell>{workplace.workers}</Table.Cell>
                                 <TableCell>{<Button icon onClick={e => handleReport(e, workplace)}>
@@ -151,9 +128,6 @@ export function InfoReport() {
                     Descargar informe general 
                 </Button>
 
-                <Button icon className='selected' onClick={e => handleReportZip(e)}>
-                    Descargar informes seleccionados
-                </Button>
             </div>
         </div>
     )

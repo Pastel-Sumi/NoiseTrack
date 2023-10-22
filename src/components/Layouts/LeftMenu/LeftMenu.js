@@ -35,7 +35,6 @@ export function LeftMenu() {
           icon="th large"
           active={isCurrentPage("/")}
         />
-
        <div className='left-menu__menu-devider'/> 
 
         <Accordion className='left-menu__menu-accordion'>
@@ -45,7 +44,7 @@ export function LeftMenu() {
             index={0}
             onClick={handleShowMenu}
           >
-            MENU
+            DATOS
             <Icon name={activeIndex === 0 ? 'angle down':'angle up'}/>
           </Accordion.Title>
           <Accordion.Content active={activeIndex === 0}>
@@ -61,16 +60,17 @@ export function LeftMenu() {
               icon="file alternate outline"
               active={isCurrentPage("/report")}
             />
-            <Menu.Item
-              as={Link} to="/config"
-              name='Configuración'
-              icon="cog"
-              active={isCurrentPage("/config")}
-            />
           </Accordion.Content>
         </Accordion>
 
         <div className='left-menu__menu-devider'/> 
+
+        <Menu.Item
+          as={Link} to="/config"
+          name='Configuración'
+          icon="cog"
+          active={isCurrentPage("/config")}
+        />
       </Menu>
 
       <div className='left-menu__user'>

@@ -15,7 +15,6 @@ const auth = new Auth();
 export function TopBar() {
 
   let alerts = [];
-  //let [numAlerts, setNumAlerts]= useState(0);
   let numAlerts = 0;
   const [newAlert, setNewAlert] = useState(false);
   const [contAlert, setContAlert] = useState(0);
