@@ -1,34 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:noisetrack/services/notification_services.dart';
+import 'globals.dart' as globals;
 
 //Firebase
-import 'package:firebase_core/firebase_core.dart';
 import 'package:noisetrack/api/firebase_service.dart';
-import 'api/firebase_api.dart';
+
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
-
-  // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'NoiseTrack Demo',
       theme: ThemeData(
-        // This is the theme of your application.
-        //
-        // TRY THIS: Try running your application with "flutter run". You'll see
-        // the application has a blue toolbar. Then, without quitting the app,
-        // try changing the seedColor in the colorScheme below to Colors.green
-        // and then invoke "hot reload" (save your changes or press the "hot
-        // reload" button in a Flutter-supported IDE, or press "r" if you used
-        // the command line to start the app).
-        //
-        // Notice that the counter didn't reset back to zero; the application
-        // state is not lost during the reload. To reset the state, use hot
-        // restart instead.
-        //
-        // This works for code too, not just values: Most code changes can be
-        // tested with just a hot reload.
         colorScheme: const ColorScheme(
           brightness: Brightness.light,
           primary: Colors.blueGrey,
@@ -54,16 +37,8 @@ class MyApp extends StatelessWidget {
 class MyHomePage extends StatefulWidget {
   const MyHomePage({super.key, required this.title});
 
-  // This widget is the home page of your application. It is stateful, meaning
-  // that it has a State object (defined below) that contains fields that affect
-  // how it looks.
-
-  // This class is the configuration for the state. It holds the values (in this
-  // case the title) provided by the parent (in this case the App widget) and
-  // used by the build method of the State. Fields in a Widget subclass are
-  // always marked "final".
-
   final String title;
+
 
   @override
   State<MyHomePage> createState() => _MyHomePageState();
@@ -88,11 +63,16 @@ class ListTileExample extends StatelessWidget {
   const ListTileExample({super.key});
 
   @override
+
   Widget build(BuildContext context) {
+    DateTime now = DateTime.now();
+    var day = now.day.toString();
+    var month = now.month.toString();
+    var year = now.year.toString();
     return Scaffold(
       appBar: AppBar(
-          title: const Text('Alertas del día',
-          style: TextStyle(
+          title: Text("Alertas del día $day/$month/$year",
+          style: const TextStyle(
             color: Colors.white
           )),
           backgroundColor: Colors.black12,
@@ -101,6 +81,7 @@ class ListTileExample extends StatelessWidget {
         future: getNotifications(),
         builder: ((context, snapshot) {
           if (snapshot.hasData){
+
             return ListView.builder(
               itemCount: snapshot.data?.length,
               itemBuilder: (context, index) {
@@ -109,78 +90,62 @@ class ListTileExample extends StatelessWidget {
                 var decibels = snapshot.data?[index]['db'].toString();
                 var place = snapshot.data?[index]['place'];
                 var type = snapshot.data?[index]['type'];
-                var color;
-                var icon;
-                if (type == 2){
-                  color = Colors.red[300];
-                  icon = const Icon(Icons.warning);
+                DateTime date = snapshot.data?[index]['created'].toDate();
+                var hour = date.hour.toString();
+                String minute;
+                if (date.minute < 10) {
+                  minute = "0${date.minute}";
+                } else {
+                  minute = date.minute.toString();
                 }
-                else{
-                  color = Colors.yellow[300];
-                  icon = const Icon(Icons.crisis_alert);
-                }
-                return Card(
-                  color: color,
-                  child: ListTile(
-                    leading: icon,
-                    title: Text('$workers personas expuestas por $time [s] a $decibels [db] en $place'),
-                  ),
-                );
-                //+'personas expuestas por ' + snapshot.data?[index]['time'] + '[s] a ' + snapshot.data?[index]['db']+ '[db] en ' + snapshot.data?[index]['place']
-            },
+                Color? color;
+                Icon icon;
+                // El if solo muestra las alertas del día
+                //if(date.day == DateTime.now().day && date.month == DateTime.now().month){
+                  if (type == 2){
+                    color = Colors.red[300];
+                    icon = const Icon(Icons.warning);
+                    globals.warning++;
+                  }
+                  else{
+                    color = Colors.yellow[300];
+                    icon = const Icon(Icons.crisis_alert);
+                    globals.alert++;
+                  }
+
+
+                  return Card(
+                    color: color,
+                    child: ListTile(
+                      leading: icon,
+                      title: Text('$workers personas expuestas por $time [s] a $decibels [db] en $place a las $hour:$minute'),
+                    ),
+                  );
+
+
+                //}
+              },
           );
         }else{
-          return const Center(
+            return const Center(
             child: CircularProgressIndicator()
           ); 
         }
-
         })),
-      // ListView(
-      //   children: <Widget>[
-      //     Card(
-      //       color: Colors.red[300],
-      //       child: ListTile(
-      //         leading: Icon(Icons.warning),
-      //         title: Text('5 personas expuestas por 10 [s] a 90 [db] en sala 3'),
-      //       ),
-      //     ),
-      //     Card(
-      //       color: Colors.red[300],
-      //       child: ListTile(
-      //         leading: Icon(Icons.warning),
-      //         title: Text('5 personas expuestas por 9 [s] a 90 [db] en sala 3'),
-      //       ),
-      //     ),
-      //     Card(
-      //       color: Colors.yellow[300],
-      //       child: ListTile(
-      //         leading: Icon(Icons.crisis_alert),
-      //         title: Text('5 personas expuestas por 8 [s] a 90 [db] en sala 3'),
-      //       ),
-      //     ),
-      //     Card(
-      //       color: Colors.yellow[300],
-      //       child: ListTile(
-      //         leading: Icon(Icons.crisis_alert),
-      //         title: Text('5 personas expuestas por 57 [s] a 90 [db] en sala 3'),
-      //       ),
-      //     ),
-      //   ],
-      // ),
+
     );
   }
 }
 
 class _MyHomePageState extends State<MyHomePage> {
+  void update(thisAlert, countAlert) {
+    setState(() {
+      thisAlert = countAlert;
+    });
+  }
   @override
   Widget build(BuildContext context) {
-    // This method is rerun every time setState is called, for instance as done
-    // by the _incrementCounter method above.
-    //
-    // The Flutter framework has been optimized to make rerunning build methods
-    // fast, so that you can just rebuild anything that needs updating rather
-    // than having to individually change instances of widgets.
+
     return Scaffold(
       appBar: AppBar(
         leading: const IconButton(
@@ -214,27 +179,30 @@ class _MyHomePageState extends State<MyHomePage> {
         // Center is a layout widget. It takes a single child and positions it
         // in the middle of the parent.
         child: Column(
-          // Column is also a layout widget. It takes a list of children and
-          // arranges them vertically. By default, it sizes itself to fit its
-          // children horizontally, and tries to be as tall as its parent.
-          //
-          // Column has various properties to control how it sizes itself and
-          // how it positions its children. Here we use mainAxisAlignment to
-          // center the children vertically; the main axis here is the vertical
-          // axis because Columns are vertical (the cross axis would be
-          // horizontal).
-          //
-          // TRY THIS: Invoke "debug painting" (choose the "Toggle Debug Paint"
-          // action in the IDE, or press "p" in the console), to see the
-          // wireframe for each widget.
-          mainAxisAlignment: MainAxisAlignment.center,
+          mainAxisAlignment: MainAxisAlignment.start,
+          mainAxisSize: MainAxisSize.max,
           children: <Widget>[
-            const Text(
-              '',
+            Card(
+              margin :const EdgeInsets.only(top: 40, left: 30.0, right: 30.0),
+              color: Colors.yellow[300],
+              child: ListTile(
+                leading: const Icon(Icons.crisis_alert),
+                title: Text(
+                  'Alertas Moderadas: ${globals.alert.toString()}',
+                  style: TextStyle(fontWeight: FontWeight.bold),
+                ),
+              ),
             ),
-            Text(
-              '',
-              style: Theme.of(context).textTheme.headlineMedium,
+            Card(
+              margin :const EdgeInsets.only(top: 15, left: 30.0, right: 30.0),
+              color: Colors.red[300],
+              child: ListTile(
+                leading: const Icon(Icons.warning),
+                title: Text(
+                    'Alertas Críticas: ${globals.warning.toString()}',
+                    style: const TextStyle(fontWeight: FontWeight.bold),
+                ),
+              ),
             ),
           ],
         ),
@@ -244,10 +212,20 @@ class _MyHomePageState extends State<MyHomePage> {
           showNotification();
           showDialog(
             context: context,
-            builder: (ctx) => const AlertDialog(
-              title: Text(""),
+            builder: (ctx) => AlertDialog(
+              title: const Text(""),
               insetPadding: EdgeInsets.zero,
-              content: ListTileApp(),
+              content: Builder(
+                  builder: (context){
+                    var height = MediaQuery.of(context).size.height;
+                    var width = MediaQuery.of(context).size.width;
+                    return SizedBox(
+                      height: height - 10,
+                      width: width - 10,
+                        child: const ListTileApp(),
+                    );
+                  },
+              ),
               backgroundColor: Colors.transparent,
             ),
           );
