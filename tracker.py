@@ -11,6 +11,7 @@ from datetime import datetime
 
 import base64
 import multiprocessing
+from multiprocessing import Queue
 
 # Server para el stream de imagenes/frames
 import socket
@@ -180,38 +181,8 @@ db_time_test = {
 
 }
 
-""" def listen_dB(adress):
-    global current_db,current_db_epp, current_db2, current_db2_epp
-    try:
-        s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        s.bind(("localhost", adress))
-        print("Escuchando en el puerto 6000")
-        s.listen(1)
-        while True:
-            conn, addr = s.accept()
-            data = conn.recv(1024)
-            if data:
-                message = data.decode()
-                '''parte_decimal = float(message.split("[")[0])
-                parte_entera = round(parte_decimal)
-                current_db = parte_entera
-                current_db_epp = current_db-10'''
-                #message = data.decode()
-                if message == "{}":
-                    pass
-                else:
-                    print(message)
-                    mes = message.split(":")[1]
-                    parte_decimal = float(mes[0:len(mes)-1])
-                    parte_entera = round(parte_decimal)
-                    current_db = parte_entera
-                    current_db_epp = current_db-10
 
-
-            conn.close()
-    except OSError as e:666666666666666666666666666666666666666666666666666666666666666666666666666666666666666666666666666666666666666666666666
-        print("Error al establecer la conexión:", str(e)) """
-
+#Traer mensajes desde la aplicación (Handler que siempre está escuchando).
 @sio.on('message')
 def handler_message(sio, data):
     global current_db, current_db2, current_db2_epp, current_db_epp
@@ -224,9 +195,11 @@ def handler_message(sio, data):
         current_db2_epp = current_db2 - 10
         #pass
 
+frame_queue_1 = Queue()
+frame_queue_2 = Queue()
     
     
-
+# Handler para enviar los frames a un socket.
 class VideoStreamHandler(BaseHTTPRequestHandler):
     def _set_headers(self):
         self.send_response(200)
@@ -238,7 +211,7 @@ class VideoStreamHandler(BaseHTTPRequestHandler):
             self._set_headers()
             try:
                 while True:
-                    _, buffer = cv2.imencode('.jpg', socket_frame_1)
+                    _, buffer = cv2.imencode('.jpg', frame_queue_1.get())
                     frame_data = b'--frame\r\nContent-Type: image/jpeg\r\n\r\n' + buffer.tobytes() + b'\r\n'
                     self.wfile.write(frame_data)
             except Exception as e:
@@ -259,7 +232,7 @@ class VideoStreamHandler2(BaseHTTPRequestHandler):
             self._set_headers()
             try:
                 while True:
-                    _, buffer = cv2.imencode('.jpg', socket_frame_2)
+                    _, buffer = cv2.imencode('.jpg', frame_queue_2.get())
                     frame_data = b'--frame\r\nContent-Type: image/jpeg\r\n\r\n' + buffer.tobytes() + b'\r\n'
                     self.wfile.write(frame_data)
             except KeyboardInterrupt:
@@ -293,10 +266,8 @@ def start_video_stream_server(server_address, handler_class):
     print(f"Servidor iniciado en {server_address}")
     httpd.serve_forever()
 
-socket_frame_1 = 0
-socket_frame_2 = 0
 
-def camera_process(source_name, source):
+def camera_process(source_name, source, frame_queue):
     global current_db, current_db_epp, current_db2, current_db2_epp
     global socket_frame_1, socket_frame_2
     class_colors = {
@@ -334,6 +305,7 @@ def camera_process(source_name, source):
 
         labels = []
         for _, _, confidence, class_id, tracker_id in detections:
+            #print(len(detections[detections.class_id == 1]))
             if source_name == "Camera 1":
                 if class_id == 1:
                     aux_db = current_db
@@ -418,7 +390,9 @@ def camera_process(source_name, source):
                                         'time': duration.seconds, 
                                         'db': aux_db, 
                                         'date': date_time,
-                                        'workers': len(trackers_exceeded_limit_8),
+                                        'workers': len(detections[detections.class_id == 0]),
+                                        'workers_epp': len(detections[detections.class_id == 2]),
+                                        'workers_no_epp': len(detections[detections.class_id == 1]),
                                         'created': created,
                                         'place': place,
                                         'type': 1,
@@ -505,13 +479,15 @@ def camera_process(source_name, source):
             labels=labels
         )
         re_frame = cv2.resize(frame, (1280, 720))
-        if source_name == "Camera 1":
-            socket_frame_1 = re_frame
-        elif source_name == "Camera 2":
-            socket_frame_2 = re_frame
+        # if source_name == "Camera 1":
+        #     socket_frame_1 = re_frame
+        # elif source_name == "Camera 2":
+        #     socket_frame_2 = re_frame
         #stream en una ventana de cv2
         
         #cv2.imshow(f"{source_name}", re_frame)
+
+        frame_queue.put(re_frame)
 
         for tracker_id in tracker_tracking_start_times.copy():
             if tracker_id not in [tracker_id for _, _, _, _, tracker_id in detections]:
@@ -531,26 +507,26 @@ def main():
     camera_source_1 = "rtsp://sumisumi:esteban535@192.168.137.27:88/videoMain"
     camera_source_2 = 0
     #camera_source_2 = "rtsp://sumisumi:esteban535@192.168.137.131:88/videoMain"
-    camera1_thread = threading.Thread(target=camera_process, args=("Camera 1", camera_source_1))
-    camera2_thread = threading.Thread(target=camera_process, args=("Camera 2", camera_source_2))
+    #camera1_thread = multiprocessing.Process(target=camera_process, args=("Camera 1", camera_source_1, frame_queue_1))
+    camera2_thread = multiprocessing.Process(target=camera_process, args=("Camera 2", camera_source_2, frame_queue_2))
 
     # Iniciar los hilos
-    camera1_thread.start()
+    #camera1_thread.start()
     camera2_thread.start()
 
     app = socketio.WSGIApp(sio)
     eventlet.wsgi.server(eventlet.listen(('localhost', 6001)), app,log=open(os.devnull,"w"))
 
     # Esperar a que los hilos terminen (puedes agregar manejo de señales para detenerlos)
-    camera1_thread.join()
+    #camera1_thread.join()
     camera2_thread.join()
 
 if __name__ == "__main__":
     
-    server_address = ('localhost', 8000)
-    stream_handler = threading.Thread(target=start_video_stream_server, args=(server_address, VideoStreamHandler))
-    stream_handler.daemon = True
-    stream_handler.start()
+    # server_address = ('localhost', 8000)
+    # stream_handler = threading.Thread(target=start_video_stream_server, args=(server_address, VideoStreamHandler))
+    # stream_handler.daemon = True
+    # stream_handler.start()
 
     server_address2 = ('localhost', 8001)
     stream_handler2 = threading.Thread(target=start_video_stream_server, args=(server_address2, VideoStreamHandler2))
