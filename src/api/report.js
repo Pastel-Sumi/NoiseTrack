@@ -517,7 +517,7 @@ export class Reports {
             if (alertasGuardadas[1] != 0) {
 
 
-                porcentaje = (alertasGuardadas[2] / alertasGuardadas[1]) * 100;
+                porcentaje = Math.floor((alertasGuardadas[2] / alertasGuardadas[1]) * 100);
             } else {
                 porcentaje = 40;
             }
@@ -791,7 +791,7 @@ export class Reports {
             if (alertasGuardadas1[1] != 0 && alertasGuardadas2[1] != 0) {
 
 
-                porcentaje = ((alertasGuardadas1[2] + alertasGuardadas2[2]) / (alertasGuardadas1[1] + alertasGuardadas2[1])) * 100;
+                porcentaje = Math.floor(((alertasGuardadas1[2] + alertasGuardadas2[2]) / (alertasGuardadas1[1] + alertasGuardadas2[1])) * 100);
             } else {
                 porcentaje = 40;
             }
