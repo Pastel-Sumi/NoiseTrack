@@ -504,29 +504,29 @@ def camera_process(source_name, source, frame_queue):
 
 
 def main():
-    camera_source_1 = "rtsp://sumisumi:esteban535@192.168.137.27:88/videoMain"
-    camera_source_2 = 0
-    #camera_source_2 = "rtsp://sumisumi:esteban535@192.168.137.131:88/videoMain"
-    #camera1_thread = multiprocessing.Process(target=camera_process, args=("Camera 1", camera_source_1, frame_queue_1))
+    camera_source_1 = "rtsp://camera1:noisetrack6@192.168.137.197:88/videoMain"
+    camera_source_2 = "rtsp://camera2:noisetrack6@192.168.137.126:88/videoMain"
+
+    camera1_thread = multiprocessing.Process(target=camera_process, args=("Camera 1", camera_source_1, frame_queue_1))
     camera2_thread = multiprocessing.Process(target=camera_process, args=("Camera 2", camera_source_2, frame_queue_2))
 
     # Iniciar los hilos
-    #camera1_thread.start()
+    camera1_thread.start()
     camera2_thread.start()
 
     app = socketio.WSGIApp(sio)
     eventlet.wsgi.server(eventlet.listen(('localhost', 6001)), app,log=open(os.devnull,"w"))
 
     # Esperar a que los hilos terminen (puedes agregar manejo de señales para detenerlos)
-    #camera1_thread.join()
+    camera1_thread.join()
     camera2_thread.join()
 
 if __name__ == "__main__":
     
-    # server_address = ('localhost', 8000)
-    # stream_handler = threading.Thread(target=start_video_stream_server, args=(server_address, VideoStreamHandler))
-    # stream_handler.daemon = True
-    # stream_handler.start()
+    server_address = ('localhost', 8000)
+    stream_handler = threading.Thread(target=start_video_stream_server, args=(server_address, VideoStreamHandler))
+    stream_handler.daemon = True
+    stream_handler.start()
 
     server_address2 = ('localhost', 8001)
     stream_handler2 = threading.Thread(target=start_video_stream_server, args=(server_address2, VideoStreamHandler2))
