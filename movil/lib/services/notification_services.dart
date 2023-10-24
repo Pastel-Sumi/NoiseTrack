@@ -30,7 +30,7 @@ Future<void> showNotification() async {
   );
 
   FirebaseFirestore db = FirebaseFirestore.instance;
-  db.collection('alerts').snapshots().listen((event) {
+  db.collection('alerts').where('created', isGreaterThan: DateTime.timestamp().subtract(const Duration(days: 1))).snapshots().listen((event) {
   for (var change in event.docChanges) {
     switch (change.type) {
       default:
@@ -39,7 +39,7 @@ Future<void> showNotification() async {
         var time = data['time'].toString();
         var decibels = data['db'].toString();
         var place = data['place'];
-        flutterLocalNotificationsPlugin.show(1, 'Alerta', '$workers personas expuestas por $time [s] a $decibels [db] en $place', notificationDetails);;
+        flutterLocalNotificationsPlugin.show(1, 'Alerta', '$workers personas expuestas por $time [s] a $decibels [db] en $place', notificationDetails);
         break;
     }
   }

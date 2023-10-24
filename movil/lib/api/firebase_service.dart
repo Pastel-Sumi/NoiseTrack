@@ -4,7 +4,7 @@ FirebaseFirestore db = FirebaseFirestore.instance;
 
 Future<List> getNotifications() async {
   List notifications = [];
-  CollectionReference collectionReferenceNotification = db.collection('alerts');
+  Query<Map<String, dynamic>> collectionReferenceNotification = db.collection('alerts').where('created', isGreaterThan: DateTime.timestamp().subtract(const Duration(days: 1)));
 
   //Query realizada para la base de datos
   QuerySnapshot queryNotifications =  await collectionReferenceNotification.get();
