@@ -18,6 +18,9 @@ export function InfoReport() {
         { key: '3', text: 'Informe mensual', value: 'mensual'},
     ])
     const [workplaces, setWorkplaces] = useState([]);
+    const [decibeles, setDecibeles] = useState([]);
+    const [decibeles2, setDecibeles2] = useState([]);
+    const [alertas, setAlertas] = useState([]);
 
     const [selectedReport, setSelectedReport] = useState(reports[0]);
     const [loading, setLoading] = useState(true);
@@ -29,6 +32,15 @@ export function InfoReport() {
             try{
                 const response = await reportController.getAll();
                 setWorkplaces(response)
+
+                const response2 = await reportController.getDecibeles();
+                setDecibeles(response2)
+                
+                const response3 = await reportController.getAlerts();
+                setAlertas(response3)
+                
+                const response4 = await reportController.getDecibeles2();
+                setDecibeles2(response4)
                 setLoading(false)
             } catch (error){
                 console.log(error)
@@ -66,14 +78,15 @@ export function InfoReport() {
     //////////////////////////////
 
     //Informe global
-    const handleReportGlobal = (e) => {
+    const handleReportGlobal = async (e, workplaces, decibeles, alertas, decibeles2) => {
         console.log("informe global")
+        await reportController.genReportGeneral( decibeles2, alertas, decibeles, workplaces, selectedReport.key, selectedDate)
     }
 
     //Informe individual por lugar
-    const handleReport = async (e, workplace) => {
+    const handleReport = async (e, workplace, decibeles, alertas, decibeles2) => {
         console.log(workplace, selectedReport.key, selectedDate)
-        await reportController.genReportPlace(workplace, selectedReport.key, selectedDate)
+        await reportController.genReportPlace( decibeles2, alertas, decibeles, workplace, selectedReport.key, selectedDate)
         console.log("informe individual")
     }
 
@@ -138,7 +151,7 @@ export function InfoReport() {
                                 </Table.Cell>
                                 <Table.Cell>{workplace.place}</Table.Cell>
                                 <Table.Cell>{workplace.workers}</Table.Cell>
-                                <TableCell>{<Button icon onClick={e => handleReport(e, workplace)}>
+                                <TableCell>{<Button icon onClick={e => handleReport(e, workplace, decibeles, alertas, decibeles2)}>
                                                 <Icon className='icon-download' name='download'/>
                                             </Button>}
                                 </TableCell>
@@ -147,7 +160,7 @@ export function InfoReport() {
                     </Table.Body>
                 </Table>
 
-                <Button icon className='all' onClick={e => handleReportGlobal(e)}>
+                <Button icon className='all' onClick={e => handleReportGlobal(e, workplaces, decibeles, alertas, decibeles2)}>
                     Descargar informe general 
                 </Button>
 
