@@ -8,6 +8,9 @@ from supervision.draw.color import ColorPalette
 
 import os
 from datetime import datetime
+import time
+
+import requests
 
 import base64
 import multiprocessing
@@ -293,6 +296,8 @@ def camera_process(source_name, source, frame_queue):
     date_time = datetime.now().strftime("%m-%d-%Y, %H:%M:%S")
     created = datetime.now()
     workers = set()
+    tracker_timers = {}
+    flag = True
     for result in model.track(source, show=False, stream=True, persist=True, agnostic_nms=True, verbose=False,show_conf=False, conf=0.7, save=False, classes=[0,1,2]):
         
         frame = result.orig_img
@@ -428,6 +433,14 @@ def camera_process(source_name, source, frame_queue):
                         if duration.seconds > db_time_test[aux_db] and tracker_id not in trackers_exceeded_limit:
                             message = f" Un trabajador ha excedido tiempo de la exposición a {aux_db} [dB] con {duration.seconds}"
                             #print(message)
+                            if aux_db not in tracker_timers.get(tracker_id, {}):
+                                #resp = requests.get('https://192.168.18.211/on')
+                                
+                                if flag:
+                                    print("on at", time.time())
+                                    #resp = requests.get('https://192.168.18.211/on')
+                                    flag = False
+                                    tracker_timers[tracker_id] = {aux_db: time.time()}
                             trackers_exceeded_limit.add(tracker_id)
                             data = {
                                     'time': duration.seconds, 
@@ -464,6 +477,14 @@ def camera_process(source_name, source, frame_queue):
                             
                             
                             save_image_and_insert_to_db(result.orig_img, data)
+                        if aux_db in tracker_timers.get(tracker_id, {}):
+                            elapsed_time = time.time() - tracker_timers[tracker_id][aux_db]
+                            
+                            if elapsed_time >= 10:
+                                print("off at", time.time())
+                                #resp = requests.get('https://192.168.18.211/off')
+                                tracker_timers[tracker_id][aux_db] = time.time() #reiniciar el contador
+                                flag = True
             # Reset start times when current_db drops below 15
             elif aux_db < 15:
                 tracker_tracking_start_times = {}
