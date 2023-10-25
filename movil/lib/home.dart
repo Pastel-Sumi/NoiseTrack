@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:noisetrack/services/notification_services.dart';
 import 'globals.dart' as globals;
@@ -10,7 +11,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'NoiseTrack Demo',
+      title: 'NoiseTrack',
       theme: ThemeData(
         colorScheme: const ColorScheme(
           brightness: Brightness.light,
@@ -35,13 +36,11 @@ class MyApp extends StatelessWidget {
 
 
 class MyHomePage extends StatefulWidget {
-  const MyHomePage({super.key, required this.title});
-
   final String title;
-
-
+  final String user;
+  const MyHomePage({super.key, required this.title, required this.user});
   @override
-  State<MyHomePage> createState() => _MyHomePageState();
+  State<MyHomePage> createState() => _MyHomePageState(user);
 }
 
 class ListTileApp extends StatelessWidget {
@@ -90,18 +89,18 @@ class ListTileExample extends StatelessWidget {
                 var decibels = snapshot.data?[index]['db'].toString();
                 var place = snapshot.data?[index]['place'];
                 var type = snapshot.data?[index]['type'];
-                DateTime date = snapshot.data?[index]['created'].toDate();
-                var hour = date.hour.toString();
+                //DateTime date = snapshot.data?[index]['created'];
+                //var hour = date.hour.toString();
                 String minute;
-                if (date.minute < 10) {
-                  minute = "0${date.minute}";
-                } else {
-                  minute = date.minute.toString();
-                }
+                //if (date.minute < 10) {
+                //  minute = "0${date.minute}";
+                //} else {
+                //  minute = date.minute.toString();
+                //}
                 Color? color;
                 Icon icon;
                 // El if solo muestra las alertas del día
-                //if(date.day == DateTime.now().day && date.month == DateTime.now().month){
+                //if(dates > Timestamp.fromDate(DateTime.now().subtract(const Duration(days:1)))){
                   if (type == 2){
                     color = Colors.red[300];
                     icon = const Icon(Icons.warning);
@@ -118,7 +117,7 @@ class ListTileExample extends StatelessWidget {
                     color: color,
                     child: ListTile(
                       leading: icon,
-                      title: Text('$workers personas expuestas por $time [s] a $decibels [db] en $place a las $hour:$minute'),
+                      title: Text('$workers personas expuestas por $time [s] a $decibels [db] en $place'),
                     ),
                   );
 
@@ -138,14 +137,11 @@ class ListTileExample extends StatelessWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  void update(thisAlert, countAlert) {
-    setState(() {
-      thisAlert = countAlert;
-    });
-  }
+  _MyHomePageState(String this.user);
+  final user;
   @override
   Widget build(BuildContext context) {
-
+    showNotification(user);
     return Scaffold(
       appBar: AppBar(
         leading: const IconButton(
@@ -209,7 +205,7 @@ class _MyHomePageState extends State<MyHomePage> {
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
-          showNotification();
+          showNotification('user');
           showDialog(
             context: context,
             builder: (ctx) => AlertDialog(

@@ -1,7 +1,9 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:noisetrack/home.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:noisetrack/services/firebase_auth_services.dart';
+import 'package:noisetrack/worker_login.dart';
 
 class LoginPage extends StatefulWidget{
   const LoginPage({Key? key}) : super(key: key);
@@ -12,8 +14,8 @@ class LoginPage extends StatefulWidget{
 
 class _LoginPageState extends State<LoginPage>{
  final FirebaseAuthService _auth = FirebaseAuthService();
-  TextEditingController _emailController = TextEditingController();
-  TextEditingController _passwordController = TextEditingController();
+ final TextEditingController _emailController = TextEditingController();
+ final TextEditingController _passwordController = TextEditingController();
 
   @override
   //State<LoginPage> createState() => _LoginPageState();
@@ -80,8 +82,9 @@ class _LoginPageState extends State<LoginPage>{
           Padding(
               padding: const EdgeInsets.symmetric(horizontal: 25.0),
             child: GestureDetector(
+            onTap: _signIn,
             child: Container(
-              padding: EdgeInsets.all(20),
+              padding: const EdgeInsets.all(20),
               decoration: BoxDecoration(
                 color: Colors.white70,
                 borderRadius: BorderRadius.circular(12),
@@ -97,28 +100,58 @@ class _LoginPageState extends State<LoginPage>{
                 ),
               ),
             ),
-            onTap: _signIn,
             ),
           ),
           const SizedBox(height: 10),
-          const Text('¿No tienes cuenta? Contacta con tu supervisor.',style: TextStyle(fontWeight: FontWeight.bold, color: Colors.white))
-        ],
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 25.0),
+            child: GestureDetector(
+              onTap: _worker,
+              child: Container(
+                padding: const EdgeInsets.all(20),
+                decoration: BoxDecoration(
+                  color: Colors.white70,
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: const Center(
+                  child: Text(
+                    'Soy trabajador',
+                    style: TextStyle(
+                      color: Colors.black,
+                      fontWeight: FontWeight.bold,
+                      fontSize: 18,
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          ),
+          ],
       ),
     );
   }
   
-  void _signIn() async{
-    String email = _emailController.text;
-    String password = _passwordController.text;
-    
-    User? user = await _auth.signInWithEmailAndPassword(email, password);
-    
-    if(user!= null){
-      print("User is succesfully signedIn");
+  void _worker() async{
       Navigator.push(
         context,
-        MaterialPageRoute(builder: (context) => const MyHomePage(title: 'NoiseTrack')),
+        MaterialPageRoute(builder: (context) => const WorkerPage()),
       );
-    }
+
   }
+ void _signIn() async{
+   String email = _emailController.text;
+   String password = _passwordController.text;
+
+   User? user = await _auth.signInWithEmailAndPassword(email, password);
+
+   if(user!= null){
+     if (kDebugMode) {
+       print("User is succesfully signedIn");
+     }
+     Navigator.push(
+       context,
+       MaterialPageRoute(builder: (context) => const MyHomePage(title: 'NoiseTrack', user: 'supervisor')),
+     );
+   }
+ }
 }

@@ -19,7 +19,7 @@ Future<void> initNotifications() async{
   await flutterLocalNotificationsPlugin.initialize(initializationSettings);
 }
 
-Future<void> showNotification() async {
+Future<void> showNotification(String user) async {
   const AndroidNotificationDetails androidNotificationDetails =
   AndroidNotificationDetails('channel_id', 'channel_name');
 
@@ -30,21 +30,51 @@ Future<void> showNotification() async {
   );
 
   FirebaseFirestore db = FirebaseFirestore.instance;
-  db.collection('alerts').where('created', isGreaterThan: DateTime.timestamp().subtract(const Duration(days: 1))).snapshots().listen((event) {
-  for (var change in event.docChanges) {
-    switch (change.type) {
-      default:
-        Map<String, dynamic> data =change.doc.data()!;
-        var workers = data['workers'].toString();
-        var time = data['time'].toString();
-        var decibels = data['db'].toString();
-        var place = data['place'];
-        flutterLocalNotificationsPlugin.show(1, 'Alerta', '$workers personas expuestas por $time [s] a $decibels [db] en $place', notificationDetails);
-        break;
-    }
+  if(user == 'supervisor') {
+    db.collection('alerts')
+        .where('created',
+        isGreaterThan: DateTime.timestamp().subtract(const Duration(days: 1)))
+        .snapshots()
+        .listen((event) {
+      for (var change in event.docChanges) {
+        switch (change.type) {
+          default:
+            Map<String, dynamic> data = change.doc.data()!;
+            var workers = data['workers'].toString();
+            var time = data['time'].toString();
+            var decibels = data['db'].toString();
+            var place = data['place'];
+            flutterLocalNotificationsPlugin.show(1, 'Alerta',
+                'Supervisor: $workers personas expuestas por $time [s] a $decibels [db] en $place',
+                notificationDetails);
+            break;
+        }
+      }
+    });
   }
-});
-
+  else {
+    //TODO: Filtrar por sala
+    db.collection('alerts')
+        .where('created',
+        isGreaterThan: DateTime.timestamp().subtract(const Duration(days: 1)))
+        .snapshots()
+        .listen((event) {
+      for (var change in event.docChanges) {
+        switch (change.type) {
+          default:
+            Map<String, dynamic> data = change.doc.data()!;
+            var workers = data['workers'].toString();
+            var time = data['time'].toString();
+            var decibels = data['db'].toString();
+            var place = data['place'];
+            flutterLocalNotificationsPlugin.show(1, 'Alerta',
+                'Trabajador: $workers personas expuestas por $time [s] a $decibels [db] en $place',
+                notificationDetails);
+            break;
+        }
+      }
+    });
+  }
 
  
 
