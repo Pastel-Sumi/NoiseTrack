@@ -110,7 +110,7 @@ class ListTileExample extends StatelessWidget {
           backgroundColor: Colors.black12,
       ),
       body: FutureBuilder(
-        future: getNotifications(),
+        future: getNotifications(null),
         builder: ((context, snapshot) {
           if (snapshot.hasData){
             return ListView.builder(

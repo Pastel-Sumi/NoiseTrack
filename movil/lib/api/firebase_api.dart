@@ -1,6 +1,4 @@
 
-import 'dart:ffi';
-
 import 'package:firebase_messaging/firebase_messaging.dart';
 //Archivo con lo necesario para realizar la conexión a firebase
 

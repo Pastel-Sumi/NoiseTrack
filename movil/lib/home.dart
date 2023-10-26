@@ -1,4 +1,3 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:noisetrack/services/notification_services.dart';
 import 'globals.dart' as globals;
@@ -38,13 +37,16 @@ class MyApp extends StatelessWidget {
 class MyHomePage extends StatefulWidget {
   final String title;
   final String user;
-  const MyHomePage({super.key, required this.title, required this.user});
+  final String? place;
+  const MyHomePage({super.key, required this.title, required this.user, required this.place});
   @override
-  State<MyHomePage> createState() => _MyHomePageState(user);
+  State<MyHomePage> createState() => _MyHomePageState(user, place);
 }
 
 class ListTileApp extends StatelessWidget {
-  const ListTileApp({super.key});
+  const ListTileApp(this.place);
+  final String? place;
+
 
   @override
   Widget build(BuildContext context) {
@@ -53,13 +55,14 @@ class ListTileApp extends StatelessWidget {
           useMaterial3: true,
           scaffoldBackgroundColor: Colors.black12
       ),
-      home: const ListTileExample(),
+      home: ListTileExample(place),
     );
   }
 }
 
 class ListTileExample extends StatelessWidget {
-  const ListTileExample({super.key});
+  const ListTileExample(this.place);
+  final String? place;
 
   @override
 
@@ -77,7 +80,7 @@ class ListTileExample extends StatelessWidget {
           backgroundColor: Colors.black12,
       ),
       body: FutureBuilder(
-        future: getNotifications(),
+        future: getNotifications(place),
         builder: ((context, snapshot) {
           if (snapshot.hasData){
 
@@ -91,7 +94,7 @@ class ListTileExample extends StatelessWidget {
                 var type = snapshot.data?[index]['type'];
                 //DateTime date = snapshot.data?[index]['created'];
                 //var hour = date.hour.toString();
-                String minute;
+                //String minute;
                 //if (date.minute < 10) {
                 //  minute = "0${date.minute}";
                 //} else {
@@ -99,8 +102,6 @@ class ListTileExample extends StatelessWidget {
                 //}
                 Color? color;
                 Icon icon;
-                // El if solo muestra las alertas del día
-                //if(dates > Timestamp.fromDate(DateTime.now().subtract(const Duration(days:1)))){
                   if (type == 2){
                     color = Colors.red[300];
                     icon = const Icon(Icons.warning);
@@ -120,9 +121,6 @@ class ListTileExample extends StatelessWidget {
                       title: Text('$workers personas expuestas por $time [s] a $decibels [db] en $place'),
                     ),
                   );
-
-
-                //}
               },
           );
         }else{
@@ -131,17 +129,17 @@ class ListTileExample extends StatelessWidget {
           ); 
         }
         })),
-
     );
   }
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  _MyHomePageState(String this.user);
+  _MyHomePageState(String this.user, String? this.place);
   final user;
+  final place;
   @override
   Widget build(BuildContext context) {
-    showNotification(user);
+    showNotification(user, place);
     return Scaffold(
       appBar: AppBar(
         leading: const IconButton(
@@ -185,7 +183,7 @@ class _MyHomePageState extends State<MyHomePage> {
                 leading: const Icon(Icons.crisis_alert),
                 title: Text(
                   'Alertas Moderadas: ${globals.alert.toString()}',
-                  style: TextStyle(fontWeight: FontWeight.bold),
+                  style: const TextStyle(fontWeight: FontWeight.bold),
                 ),
               ),
             ),
@@ -205,7 +203,6 @@ class _MyHomePageState extends State<MyHomePage> {
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
-          showNotification('user');
           showDialog(
             context: context,
             builder: (ctx) => AlertDialog(
@@ -218,7 +215,7 @@ class _MyHomePageState extends State<MyHomePage> {
                     return SizedBox(
                       height: height - 10,
                       width: width - 10,
-                        child: const ListTileApp(),
+                        child: ListTileApp(place),
                     );
                   },
               ),

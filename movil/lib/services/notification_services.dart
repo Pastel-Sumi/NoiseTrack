@@ -19,7 +19,7 @@ Future<void> initNotifications() async{
   await flutterLocalNotificationsPlugin.initialize(initializationSettings);
 }
 
-Future<void> showNotification(String user) async {
+Future<void> showNotification(String user, String? place) async {
   const AndroidNotificationDetails androidNotificationDetails =
   AndroidNotificationDetails('channel_id', 'channel_name');
 
@@ -57,6 +57,7 @@ Future<void> showNotification(String user) async {
     db.collection('alerts')
         .where('created',
         isGreaterThan: DateTime.timestamp().subtract(const Duration(days: 1)))
+        .where('place', isEqualTo: place)
         .snapshots()
         .listen((event) {
       for (var change in event.docChanges) {
