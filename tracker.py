@@ -11,7 +11,7 @@ from datetime import datetime
 import time
 
 import requests
-
+import random
 import base64
 import multiprocessing
 from multiprocessing import Queue
@@ -33,10 +33,10 @@ firebase_admin.initialize_app(cred)
 
 sio = socketio.Server(cors_allowed_origins='*')
 
-current_db = 85
+current_db = 100
 current_db_epp = 0
 
-current_db2 = 85
+current_db2 = 100
 current_db2_epp = 0
 
 db_time = {
@@ -138,52 +138,55 @@ db_time_test = {
     77: 150,
     78: 150,
     79: 150,
-    80: 150,
-    81: 150,
-    82: 150,
-    83: 150,
-    84: 150,
+    80: 40,
+    81: 40,
+    82: 40,
+    83: 40,
+    84: 40,
     85: 40,
-    86: 150,
-    87: 150,
-    88: 150,
-    89: 150,
-    90: 150,
-    91: 150,
-    92: 150,
-    93: 150,
-    94: 150,
-    95: 150,
-    96: 150,
-    97: 150,
-    98: 150,
-    99: 150,
-    100: 80,
-    101: 150,
-    102: 150,
-    103: 150,
-    104: 150,
-    105: 150,
-    106: 150,
-    107: 150,
-    108: 150,
-    109: 150,
-    110: 150,
-    111: 150,
-    112: 150,
-    113: 150,
-    114: 150,
-    115: 150,
-    116: 150,
-    117: 150,
-    118: 150,
-    119: 150,
-    120: 150,
+    86: 40,
+    87: 40,
+    88: 40,
+    89: 40,
+    90: 40,
+    91: 40,
+    92: 40,
+    93: 40,
+    94: 40,
+    95: 40,
+    96: 40,
+    97: 40,
+    98: 40,
+    99: 40,
+    100: 10,
+    101: 40,
+    102: 40,
+    103: 40,
+    104: 40,
+    105: 40,
+    106: 40,
+    107: 40,
+    108: 40,
+    109: 40,
+    110: 40,
+    111: 40,
+    112: 40,
+    113: 40,
+    114: 40,
+    115: 40,
+    116: 40,
+    117: 40,
+    118: 40,
+    119: 40,
+    120: 40,
 
 
 
 }
-
+current_db = multiprocessing.Value('i', 65)
+current_db2 = multiprocessing.Value('i', 65)
+current_db_epp = multiprocessing.Value('i', 55)
+current_db2_epp = multiprocessing.Value('i', 55)
 
 #Traer mensajes desde la aplicación (Handler que siempre está escuchando).
 @sio.on('message')
@@ -191,16 +194,18 @@ def handler_message(sio, data):
     global current_db, current_db2, current_db2_epp, current_db_epp
     if(data[0]=='1'):
         #pass
-        current_db = round(float(data[2:]))
-        current_db_epp = current_db - 10
+        current_db.value = round(float(data[2:]))
+        current_db_epp.value = current_db.value - 10
     elif(data[0]=='2'):
-        current_db2 = round(float(data[2:]))
-        current_db2_epp = current_db2 - 10
+        current_db2.value = round(float(data[2:]))
+        current_db2_epp.value = current_db2.value - 10
         #pass
+
+
 
 frame_queue_1 = Queue()
 frame_queue_2 = Queue()
-    
+   
     
 # Handler para enviar los frames a un socket.
 class VideoStreamHandler(BaseHTTPRequestHandler):
@@ -270,8 +275,7 @@ def start_video_stream_server(server_address, handler_class):
     httpd.serve_forever()
 
 
-def camera_process(source_name, source, frame_queue):
-    global current_db, current_db_epp, current_db2, current_db2_epp
+def camera_process(source_name, source, frame_queue, current_db, current_db_epp):
     global socket_frame_1, socket_frame_2
     class_colors = {
         0: sv.Color(0, 0, 255),   # Azul
@@ -311,16 +315,11 @@ def camera_process(source_name, source, frame_queue):
         labels = []
         for _, _, confidence, class_id, tracker_id in detections:
             #print(len(detections[detections.class_id == 1]))
-            if source_name == "Camera 1":
-                if class_id == 1:
-                    aux_db = current_db
-                elif class_id == 2:
-                    aux_db = current_db_epp
-            else:
-                if class_id == 1:
-                    aux_db = current_db2
-                elif class_id == 2:
-                    aux_db = current_db2_epp
+            
+            if class_id == 1:
+                aux_db = current_db.value
+            elif class_id == 2:
+                aux_db = current_db_epp.value
             
             text_color = 0
 
@@ -380,10 +379,16 @@ def camera_process(source_name, source, frame_queue):
                         duration = current_time - tracker_tracking_start_times[tracker_id][aux_db]
                         label += f" ({duration.seconds} seg)"
                         place = ""
+                        balizaON = ""
+                        balizaOFF = ""
                         if source_name == 'Camera 1':
                             place = "Sala 1"
+                            balizaON = "http://192.168.62.221/on"
+                            balizaOFF ="http://192.168.62.221/off"
                         else:
                             place = "Sala 2"
+                            balizaON = "http://192.168.62.222/on"
+                            balizaOFF = "http://192.168.62.222/off"
                         # Guardar el frame si cumple que la clase sea ear_off, supere los 10 segundos y no se encuentre en los trackers que superaron el limite (para que se guarde solo 1 vez)
                         if class_id == 1:
                             if duration.seconds > db_time_test[aux_db]/8 and tracker_id not in trackers_exceeded_limit_8:
@@ -438,7 +443,7 @@ def camera_process(source_name, source, frame_queue):
                                 
                                 if flag:
                                     print("on at", time.time())
-                                    resp = requests.get('http://192.168.137.221/on')
+                                    resp = requests.get(balizaON)
                                     flag = False
                                     tracker_timers[tracker_id] = {aux_db: time.time()}
                             trackers_exceeded_limit.add(tracker_id)
@@ -482,7 +487,7 @@ def camera_process(source_name, source, frame_queue):
                             
                             if elapsed_time >= 10:
                                 print("off at", time.time())
-                                resp = requests.get('http://192.168.137.221/off')
+                                resp = requests.get(balizaOFF)
                                 del tracker_timers[tracker_id] #reiniciar el contador
                                 flag = True
             # Reset start times when current_db drops below 15
@@ -525,22 +530,22 @@ def camera_process(source_name, source, frame_queue):
 
 
 def main():
-    camera_source_1 = "rtsp://camera1:noisetrack6@192.168.137.69:88/videoMain"
-    camera_source_2 = "rtsp://camera2:noisetrack6@192.168.137.130:88/videoMain"
+    camera_source_1 = "rtsp://camera1:noisetrack6@192.168.62.203:88/videoMain"
+    #camera_source_2 = "rtsp://camera2:noisetrack6@192.168.62.183:88/videoMain"
 
-    camera1_thread = multiprocessing.Process(target=camera_process, args=("Camera 1", camera_source_1, frame_queue_1))
-    camera2_thread = multiprocessing.Process(target=camera_process, args=("Camera 2", camera_source_2, frame_queue_2))
+    camera1_thread = multiprocessing.Process(target=camera_process, args=("Camera 1", camera_source_1, frame_queue_1, current_db, current_db_epp))
+    #camera2_thread = multiprocessing.Process(target=camera_process, args=("Camera 2", camera_source_2, frame_queue_2, current_db2, current_db2_epp))
 
     # Iniciar los hilos
     camera1_thread.start()
-    camera2_thread.start()
+    #camera2_thread.start()
 
     app = socketio.WSGIApp(sio)
     eventlet.wsgi.server(eventlet.listen(('localhost', 6001)), app,log=open(os.devnull,"w"))
 
     # Esperar a que los hilos terminen (puedes agregar manejo de señales para detenerlos)
     camera1_thread.join()
-    camera2_thread.join()
+    # camera2_thread.join()
 
 if __name__ == "__main__":
     
@@ -549,9 +554,9 @@ if __name__ == "__main__":
     stream_handler.daemon = True
     stream_handler.start()
 
-    server_address2 = ('localhost', 8001)
-    stream_handler2 = threading.Thread(target=start_video_stream_server, args=(server_address2, VideoStreamHandler2))
-    stream_handler2.daemon = True
-    stream_handler2.start()
+    # server_address2 = ('localhost', 8001)
+    # stream_handler2 = threading.Thread(target=start_video_stream_server, args=(server_address2, VideoStreamHandler2))
+    # stream_handler2.daemon = True
+    # stream_handler2.start()
 
     main()
